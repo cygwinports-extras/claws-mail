@@ -45,7 +45,7 @@ Build requirements:
   automake1.10-1.10.1-1
   binutils-20080523-1
   bison-2.3-1
-  cygport-0.3.11-1
+  cygport-0.3.12-1
   flex-2.5.35-1
   gawk-3.1.6-1
   gcc-core-3.4.4-3
@@ -65,15 +65,15 @@ Canonical download:
 -------------------------------------------
 
 Build instructions:
-  unpack claws-mail-3.4.0-X-src.tar.bz2
+  unpack claws-mail-3.5.0-X-src.tar.bz2
     if you use setup to install this src package, it will be
 	 unpacked under /usr/src automatically
   cd /usr/src
-  cygport ./claws-mail-3.4.0-X.cygport all
+  cygport ./claws-mail-3.5.0-X.cygport all
 
 This will create:
-  /usr/src/claws-mail-3.4.0-X-src.tar.bz2
-  /usr/src/claws-mail-3.4.0-X.tar.bz2
+  /usr/src/claws-mail-3.5.0-X-src.tar.bz2
+  /usr/src/claws-mail-3.5.0-X.tar.bz2
 
 -------------------------------------------
 
@@ -84,31 +84,31 @@ Files included in the binary packages:
   /usr/bin/claws-mail.exe
   /usr/bin/sylpheed-claws
   /usr/share/applications/claws-mail.desktop
-  /usr/share/doc/claws-mail-3.4.0/ABOUT-NLS
-  /usr/share/doc/claws-mail-3.4.0/AUTHORS
-  /usr/share/doc/claws-mail-3.4.0/COPYING
-  /usr/share/doc/claws-mail-3.4.0/ChangeLog
-  /usr/share/doc/claws-mail-3.4.0/INSTALL
-  /usr/share/doc/claws-mail-3.4.0/NEWS
-  /usr/share/doc/claws-mail-3.4.0/README
-  /usr/share/doc/claws-mail-3.4.0/RELEASE_NOTES
-  /usr/share/doc/claws-mail-3.4.0/TODO
-  /usr/share/doc/claws-mail-3.4.0/manual/en/claws-mail-manual.html
-  /usr/share/doc/claws-mail-3.4.0/manual/en/claws-mail-manual.pdf
-  /usr/share/doc/claws-mail-3.4.0/manual/en/claws-mail-manual.ps
-  /usr/share/doc/claws-mail-3.4.0/manual/en/claws-mail-manual.txt
-  /usr/share/doc/claws-mail-3.4.0/manual/es/claws-mail-manual.html
-  /usr/share/doc/claws-mail-3.4.0/manual/es/claws-mail-manual.pdf
-  /usr/share/doc/claws-mail-3.4.0/manual/es/claws-mail-manual.ps
-  /usr/share/doc/claws-mail-3.4.0/manual/es/claws-mail-manual.txt
-  /usr/share/doc/claws-mail-3.4.0/manual/fr/claws-mail-manual.html
-  /usr/share/doc/claws-mail-3.4.0/manual/fr/claws-mail-manual.pdf
-  /usr/share/doc/claws-mail-3.4.0/manual/fr/claws-mail-manual.ps
-  /usr/share/doc/claws-mail-3.4.0/manual/fr/claws-mail-manual.txt
-  /usr/share/doc/claws-mail-3.4.0/manual/pl/claws-mail-manual.html
-  /usr/share/doc/claws-mail-3.4.0/manual/pl/claws-mail-manual.pdf
-  /usr/share/doc/claws-mail-3.4.0/manual/pl/claws-mail-manual.ps
-  /usr/share/doc/claws-mail-3.4.0/manual/pl/claws-mail-manual.txt
+  /usr/share/doc/claws-mail-3.5.0/ABOUT-NLS
+  /usr/share/doc/claws-mail-3.5.0/AUTHORS
+  /usr/share/doc/claws-mail-3.5.0/COPYING
+  /usr/share/doc/claws-mail-3.5.0/ChangeLog
+  /usr/share/doc/claws-mail-3.5.0/INSTALL
+  /usr/share/doc/claws-mail-3.5.0/NEWS
+  /usr/share/doc/claws-mail-3.5.0/README
+  /usr/share/doc/claws-mail-3.5.0/RELEASE_NOTES
+  /usr/share/doc/claws-mail-3.5.0/TODO
+  /usr/share/doc/claws-mail-3.5.0/manual/en/claws-mail-manual.html
+  /usr/share/doc/claws-mail-3.5.0/manual/en/claws-mail-manual.pdf
+  /usr/share/doc/claws-mail-3.5.0/manual/en/claws-mail-manual.ps
+  /usr/share/doc/claws-mail-3.5.0/manual/en/claws-mail-manual.txt
+  /usr/share/doc/claws-mail-3.5.0/manual/es/claws-mail-manual.html
+  /usr/share/doc/claws-mail-3.5.0/manual/es/claws-mail-manual.pdf
+  /usr/share/doc/claws-mail-3.5.0/manual/es/claws-mail-manual.ps
+  /usr/share/doc/claws-mail-3.5.0/manual/es/claws-mail-manual.txt
+  /usr/share/doc/claws-mail-3.5.0/manual/fr/claws-mail-manual.html
+  /usr/share/doc/claws-mail-3.5.0/manual/fr/claws-mail-manual.pdf
+  /usr/share/doc/claws-mail-3.5.0/manual/fr/claws-mail-manual.ps
+  /usr/share/doc/claws-mail-3.5.0/manual/fr/claws-mail-manual.txt
+  /usr/share/doc/claws-mail-3.5.0/manual/pl/claws-mail-manual.html
+  /usr/share/doc/claws-mail-3.5.0/manual/pl/claws-mail-manual.pdf
+  /usr/share/doc/claws-mail-3.5.0/manual/pl/claws-mail-manual.ps
+  /usr/share/doc/claws-mail-3.5.0/manual/pl/claws-mail-manual.txt
   /usr/share/icons/hicolor/48x48/apps/claws-mail.png
   /usr/share/locale/bg/LC_MESSAGES/claws-mail.mo
   /usr/share/locale/ca/LC_MESSAGES/claws-mail.mo
@@ -378,6 +378,9 @@ Files included in the binary packages:
 ------------------
 
 Port Notes:
+
+----- version 3.5.0-1 -----
+Version bump.
 
 ----- version 3.4.0-1 -----
 Initial release for Cygwin.
