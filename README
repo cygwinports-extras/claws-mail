@@ -17,22 +17,27 @@ Runtime requirements:
   cygwin-1.5.25-15
   compface-1.5.2-1
   crypt-1.1-1
-  gdk-pixbuf2-2.12.10-1
-  glib2-2.16.3-1
-  gtk2-x11-2.12.10-1
-  libaspell15-0.60.5-1
-  libcairo2-1.6.4-1
-  libetpan13-0.54-1
-  libICE6-1.0.4-1
-  libopenldap2_3_0-2.3.39-1
-  libSM6-1.0.3-1
-  minires-1.01-1
-  openssl-0.9.8h-1
-  pango-1.20.3-1
-  startup-notification-0.9-1
+  libcairo2-1.8.6-1
+  libdbus-glib_1_2-0.78-1
+  libenchant1-1.4.2-2
+  libetpan13-0.57-1
+  libgcrypt11-1.4.1-4
+  libgdk_pixbuf2.0_0-2.14.5-1
+  libglib2.0_0-2.18.3-1
+  libgnutls26-2.4.1-1
+  libgtk2.0_0-2.14.5-1
+  libICE6-1.0.4-2
+  libiconv2-1.12-1
+  libintl8-0.17-2
+  libopenldap2_3_0-2.3.43-1
+  libpango1.0_0-1.22.3-1
+  libSM6-1.1.0-1
+  libstartup-notification1_0-0.9-2
+  minires-1.02-1
 (bogofilter plugin)
   bogofilter
-(pgp plugin)
+(pgp* plugins)
+  libgpg-error0-1.6-1
   libgpgme11-1.1.5-1
 (spamassassin plugin)
   spamassassin
@@ -41,17 +46,17 @@ Runtime requirements:
 
 Build requirements:
 (besides corresponding -devel packages)
-  autoconf2.5-2.61-1
-  automake1.10-1.10.1-1
-  binutils-20080523-1
+  autoconf2.5-2.63-1
+  automake1.10-1.10.1-2
+  binutils-20080624-2
   bison-2.3-1
-  cygport-0.3.12-1
+  cygport-0.4.3-1
   flex-2.5.35-1
   gawk-3.1.6-1
   gcc-core-3.4.4-3
-  gettext-devel-0.15-1
-  gnome-common-2.20.0-2
-  libtool-2.2.2-2
+  gettext-devel-0.17-2
+  gnome-common-2.24.0-1
+  libtool-2.2.6a-1
   make-3.81-1
   pkg-config-0.21-1
   sed-4.1.5-2
@@ -65,15 +70,22 @@ Canonical download:
 -------------------------------------------
 
 Build instructions:
-  unpack claws-mail-3.5.0-X-src.tar.bz2
+  unpack claws-mail-3.7.0-X-src.tar.bz2
     if you use setup to install this src package, it will be
 	 unpacked under /usr/src automatically
   cd /usr/src
-  cygport ./claws-mail-3.5.0-X.cygport all
+  cygport ./claws-mail-3.7.0-X.cygport all
 
 This will create:
-  /usr/src/claws-mail-3.5.0-X-src.tar.bz2
-  /usr/src/claws-mail-3.5.0-X.tar.bz2
+  /usr/src/claws-mail-3.7.0-X-src.tar.bz2
+  /usr/src/claws-mail-3.7.0-X.tar.bz2
+  /usr/src/claws-mail-bogofilter-3.7.0-X.tar.bz2
+  /usr/src/claws-mail-pgpcore-3.7.0-X.tar.bz2
+  /usr/src/claws-mail-pgpinline-3.7.0-X.tar.bz2
+  /usr/src/claws-mail-pgpmime-3.7.0-X.tar.bz2
+  /usr/src/claws-mail-smime-3.7.0-X.tar.bz2
+  /usr/src/claws-mail-spamassassin-3.7.0-X.tar.bz2
+  /usr/src/claws-mail-trayicon-3.7.0-X.tar.bz2
 
 -------------------------------------------
 
@@ -84,57 +96,48 @@ Files included in the binary packages:
   /usr/bin/claws-mail.exe
   /usr/bin/sylpheed-claws
   /usr/share/applications/claws-mail.desktop
-  /usr/share/doc/claws-mail-3.5.0/ABOUT-NLS
-  /usr/share/doc/claws-mail-3.5.0/AUTHORS
-  /usr/share/doc/claws-mail-3.5.0/COPYING
-  /usr/share/doc/claws-mail-3.5.0/ChangeLog
-  /usr/share/doc/claws-mail-3.5.0/INSTALL
-  /usr/share/doc/claws-mail-3.5.0/NEWS
-  /usr/share/doc/claws-mail-3.5.0/README
-  /usr/share/doc/claws-mail-3.5.0/RELEASE_NOTES
-  /usr/share/doc/claws-mail-3.5.0/TODO
-  /usr/share/doc/claws-mail-3.5.0/manual/en/claws-mail-manual.html
-  /usr/share/doc/claws-mail-3.5.0/manual/en/claws-mail-manual.pdf
-  /usr/share/doc/claws-mail-3.5.0/manual/en/claws-mail-manual.ps
-  /usr/share/doc/claws-mail-3.5.0/manual/en/claws-mail-manual.txt
-  /usr/share/doc/claws-mail-3.5.0/manual/es/claws-mail-manual.html
-  /usr/share/doc/claws-mail-3.5.0/manual/es/claws-mail-manual.pdf
-  /usr/share/doc/claws-mail-3.5.0/manual/es/claws-mail-manual.ps
-  /usr/share/doc/claws-mail-3.5.0/manual/es/claws-mail-manual.txt
-  /usr/share/doc/claws-mail-3.5.0/manual/fr/claws-mail-manual.html
-  /usr/share/doc/claws-mail-3.5.0/manual/fr/claws-mail-manual.pdf
-  /usr/share/doc/claws-mail-3.5.0/manual/fr/claws-mail-manual.ps
-  /usr/share/doc/claws-mail-3.5.0/manual/fr/claws-mail-manual.txt
-  /usr/share/doc/claws-mail-3.5.0/manual/pl/claws-mail-manual.html
-  /usr/share/doc/claws-mail-3.5.0/manual/pl/claws-mail-manual.pdf
-  /usr/share/doc/claws-mail-3.5.0/manual/pl/claws-mail-manual.ps
-  /usr/share/doc/claws-mail-3.5.0/manual/pl/claws-mail-manual.txt
+  /usr/share/doc/claws-mail-3.7.0/ABOUT-NLS
+  /usr/share/doc/claws-mail-3.7.0/AUTHORS
+  /usr/share/doc/claws-mail-3.7.0/COPYING
+  /usr/share/doc/claws-mail-3.7.0/ChangeLog
+  /usr/share/doc/claws-mail-3.7.0/INSTALL
+  /usr/share/doc/claws-mail-3.7.0/NEWS
+  /usr/share/doc/claws-mail-3.7.0/README
+  /usr/share/doc/claws-mail-3.7.0/RELEASE_NOTES
+  /usr/share/doc/claws-mail-3.7.0/TODO
+  /usr/share/doc/claws-mail-3.7.0/manual/en/claws-mail-manual.html
+  /usr/share/doc/claws-mail-3.7.0/manual/en/claws-mail-manual.pdf
+  /usr/share/doc/claws-mail-3.7.0/manual/en/claws-mail-manual.ps
+  /usr/share/doc/claws-mail-3.7.0/manual/en/claws-mail-manual.txt
+  /usr/share/doc/claws-mail-3.7.0/manual/es/claws-mail-manual.html
+  /usr/share/doc/claws-mail-3.7.0/manual/es/claws-mail-manual.pdf
+  /usr/share/doc/claws-mail-3.7.0/manual/es/claws-mail-manual.ps
+  /usr/share/doc/claws-mail-3.7.0/manual/es/claws-mail-manual.txt
+  /usr/share/doc/claws-mail-3.7.0/manual/fr/claws-mail-manual.html
+  /usr/share/doc/claws-mail-3.7.0/manual/fr/claws-mail-manual.pdf
+  /usr/share/doc/claws-mail-3.7.0/manual/fr/claws-mail-manual.ps
+  /usr/share/doc/claws-mail-3.7.0/manual/fr/claws-mail-manual.txt
+  /usr/share/doc/claws-mail-3.7.0/manual/pl/claws-mail-manual.html
+  /usr/share/doc/claws-mail-3.7.0/manual/pl/claws-mail-manual.pdf
+  /usr/share/doc/claws-mail-3.7.0/manual/pl/claws-mail-manual.ps
+  /usr/share/doc/claws-mail-3.7.0/manual/pl/claws-mail-manual.txt
   /usr/share/icons/hicolor/48x48/apps/claws-mail.png
   /usr/share/locale/bg/LC_MESSAGES/claws-mail.mo
   /usr/share/locale/ca/LC_MESSAGES/claws-mail.mo
   /usr/share/locale/cs/LC_MESSAGES/claws-mail.mo
   /usr/share/locale/de/LC_MESSAGES/claws-mail.mo
-  /usr/share/locale/el/LC_MESSAGES/claws-mail.mo
   /usr/share/locale/en_GB/LC_MESSAGES/claws-mail.mo
   /usr/share/locale/es/LC_MESSAGES/claws-mail.mo
   /usr/share/locale/fi/LC_MESSAGES/claws-mail.mo
   /usr/share/locale/fr/LC_MESSAGES/claws-mail.mo
-  /usr/share/locale/he/LC_MESSAGES/claws-mail.mo
-  /usr/share/locale/hr/LC_MESSAGES/claws-mail.mo
   /usr/share/locale/hu/LC_MESSAGES/claws-mail.mo
   /usr/share/locale/it/LC_MESSAGES/claws-mail.mo
-  /usr/share/locale/ja/LC_MESSAGES/claws-mail.mo
-  /usr/share/locale/ko/LC_MESSAGES/claws-mail.mo
-  /usr/share/locale/nb/LC_MESSAGES/claws-mail.mo
   /usr/share/locale/nl/LC_MESSAGES/claws-mail.mo
   /usr/share/locale/pl/LC_MESSAGES/claws-mail.mo
   /usr/share/locale/pt_BR/LC_MESSAGES/claws-mail.mo
   /usr/share/locale/ru/LC_MESSAGES/claws-mail.mo
-  /usr/share/locale/sk/LC_MESSAGES/claws-mail.mo
-  /usr/share/locale/sr/LC_MESSAGES/claws-mail.mo
   /usr/share/locale/sv/LC_MESSAGES/claws-mail.mo
   /usr/share/locale/zh_CN/LC_MESSAGES/claws-mail.mo
-  /usr/share/locale/zh_TW/LC_MESSAGES/claws-mail.mo
   /usr/share/man/man1/claws-mail.1.gz
 
 (claws-mail-devel)
@@ -159,6 +162,7 @@ Files included in the binary packages:
   /usr/include/claws-mail/addrquery.h
   /usr/include/claws-mail/addrselect.h
   /usr/include/claws-mail/alertpanel.h
+  /usr/include/claws-mail/autofaces.h
   /usr/include/claws-mail/browseldap.h
   /usr/include/claws-mail/codeconv.h
   /usr/include/claws-mail/common/base64.h
@@ -232,6 +236,9 @@ Files included in the binary packages:
   /usr/include/claws-mail/gtk/filesel.h
   /usr/include/claws-mail/gtk/foldersort.h
   /usr/include/claws-mail/gtk/gtkaspell.h
+  /usr/include/claws-mail/gtk/gtkcmclist.h
+  /usr/include/claws-mail/gtk/gtkcmctree.h
+  /usr/include/claws-mail/gtk/gtkcmoptionmenu.h
   /usr/include/claws-mail/gtk/gtksctree.h
   /usr/include/claws-mail/gtk/gtkshruler.h
   /usr/include/claws-mail/gtk/gtksourceprintjob.h
@@ -294,6 +301,7 @@ Files included in the binary packages:
   /usr/include/claws-mail/plugins/pgpcore/sgpgme.h
   /usr/include/claws-mail/plugins/pgpinline/pgpinline.h
   /usr/include/claws-mail/plugins/pgpmime/pgpmime.h
+  /usr/include/claws-mail/plugins/smime/smime.h
   /usr/include/claws-mail/pop.h
   /usr/include/claws-mail/prefs_account.h
   /usr/include/claws-mail/prefs_actions.h
@@ -357,15 +365,24 @@ Files included in the binary packages:
   /usr/lib/claws-mail/plugins/bogofilter.dll
   /usr/lib/claws-mail/plugins/bogofilter.la
 
-(claws-mail-pgp)
+(claws-mail-pgpcore)
   /usr/lib/claws-mail/plugins/pgpcore.dll
   /usr/lib/claws-mail/plugins/pgpcore.la
+
+(claws-mail-pgpinline)
   /usr/lib/claws-mail/plugins/pgpinline.deps
   /usr/lib/claws-mail/plugins/pgpinline.dll
   /usr/lib/claws-mail/plugins/pgpinline.la
+
+(claws-mail-pgpmime)
   /usr/lib/claws-mail/plugins/pgpmime.deps
   /usr/lib/claws-mail/plugins/pgpmime.dll
   /usr/lib/claws-mail/plugins/pgpmime.la
+
+(claws-mail-smime)
+  /usr/lib/claws-mail/plugins/smime.deps
+  /usr/lib/claws-mail/plugins/smime.dll
+  /usr/lib/claws-mail/plugins/smime.la
 
 (claws-mail-spamassassin)
   /usr/lib/claws-mail/plugins/spamassassin.dll
@@ -378,6 +395,9 @@ Files included in the binary packages:
 ------------------
 
 Port Notes:
+
+----- version 3.7.0-1 -----
+Version bump.
 
 ----- version 3.5.0-1 -----
 Version bump.

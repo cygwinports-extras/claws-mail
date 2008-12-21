@@ -3,26 +3,27 @@ inherit gnome2
 DESCRIPTION="GTK+ mail client with plugin extensibility"
 HOMEPAGE="http://www.claws-mail.org/"
 SRC_URI="mirror://sourceforge/sylpheed-claws/${P}.tar.bz2"
+PATCH_URI="3.7.0-implib.patch"
 
 PKG_NAMES="${PN} ${PN}-devel"
 PKG_HINTS="setup devel"
-PKG_CONTENTS[0]="etc/ usr/bin/ usr/share/"
-PKG_CONTENTS[1]="usr/include/ usr/lib/lib${PN}.a usr/lib/pkgconfig/"
+claws_mail_CONTENTS="etc/ usr/bin/ usr/share/"
+claws_mail_devel_CONTENTS="usr/include/ usr/lib/lib${PN}.a usr/lib/pkgconfig/"
 
-n=2
-for plugin in bogofilter pgp spamassassin trayicon
+for plugin in bogofilter pgpcore pgpinline pgpmime smime spamassassin trayicon
 do
 	PKG_NAMES+=" ${PN}-${plugin}"
 	PKG_HINTS+=" ${plugin}"
-	PKG_CONTENTS[$((n++))]="usr/lib/${PN}/plugins/${plugin}*"
+	declare claws_mail_${plugin}_CONTENTS="usr/lib/${PN}/plugins/${plugin}.*"
 done
 
+DEPS_PATH="/usr/lib/${PN}/plugins"
 DIFF_EXCLUDES="m4 po"
 
 ACLOCAL_FLAGS="-I m4"
 CYGCONF_ARGS="
+	--disable-dillo-viewer-plugin
 	--disable-ipv6
 	--disable-jpilot
 	--disable-networkmanager-support
-	--disable-dillo-viewer-plugin
 "

@@ -1,0 +1,305 @@
+--- origsrc/claws-mail-3.7.0/claws-mail.pc.in	2008-10-10 02:17:52.000000000 -0500
++++ src/claws-mail-3.7.0/claws-mail.pc.in	2008-12-21 00:24:38.084926400 -0600
+@@ -11,4 +11,5 @@
+ Description: Claws Mail
+ Version: @MAJOR_VERSION@.@MINOR_VERSION@.@MICRO_VERSION@.@EXTRA_VERSION@
+ 
++Libs: -L${libdir} @CLAWS_IMPLIB@
+ Cflags: @ENCHANT_CFLAGS@ @GPGME_CFLAGS@ -I${pkgincludedir} -I${pkgincludedir}/common -I${pkgincludedir}/gtk
+--- origsrc/claws-mail-3.7.0/configure.ac	2008-12-19 05:15:11.000000000 -0600
++++ src/claws-mail-3.7.0/configure.ac	2008-12-21 00:24:38.100551400 -0600
+@@ -101,15 +101,22 @@
+ dnl Copied from the official gtk+-2 configure.in
+ AC_MSG_CHECKING([for some Win32 platform])
+ case "$host" in
+-  *-*-mingw*|*-*-cygwin*)
++  *-*-cygwin*)
++    platform_win32=yes
++    CLAWS_IMPLIB="-lclaws-mail"
++    ;;
++  *-*-mingw*)
+     platform_win32=yes
+     LDFLAGS="$LDFLAGS -mwindows"
++    CLAWS_IMPLIB="-lclaws-mail"
+     ;;
+   *)
+     platform_win32=no
++    CLAWS_IMPLIB=
+     ;;
+ esac
+ AC_MSG_RESULT([$platform_win32])
++AC_SUBST(CLAWS_IMPLIB)
+ AM_CONDITIONAL(PLATFORM_WIN32, test x"$platform_win32" = x"yes")
+ 
+ AC_MSG_CHECKING([for native Win32])
+--- origsrc/claws-mail-3.7.0/src/Makefile.am	2008-12-14 04:31:08.000000000 -0600
++++ src/claws-mail-3.7.0/src/Makefile.am	2008-12-21 00:24:38.131801400 -0600
+@@ -12,9 +12,13 @@
+ bin_PROGRAMS = claws-mail
+ install-exec-hook:
+ 	@rm -f $(DESTDIR)$(bindir)/sylpheed-claws
+-	@ln -s claws-mail $(DESTDIR)$(bindir)/sylpheed-claws
+-
++	@ln -s claws-mail$(EXEEXT) $(DESTDIR)$(bindir)/sylpheed-claws
+ if PLATFORM_WIN32
++	$(mkinstalldirs) $(DESTDIR)$(libdir)
++	$(INSTALL_DATA) libclaws-mail.a $(DESTDIR)$(libdir)/libclaws-mail.a
++endif
++
++if OS_WIN32
+ LTRCCOMPILE = $(LIBTOOL) --mode=compile $(RC) \
+      `echo $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) | \
+      sed -e 's/-I/--include-dir /g;s/-D/--define /g'`
+@@ -499,7 +503,7 @@
+ 	-I$(srcdir)/etpan
+ 
+ if PLATFORM_WIN32
+-arch_ldflags := -export-all-symbols
++arch_ldflags := -Wl,--export-all-symbols,--out-implib,libclaws-mail.a
+ else
+ arch_ldflags :=
+ endif
+@@ -559,20 +563,3 @@
+ #to call inside gpgme due to our lack of LARGEFILE support
+ 
+ AM_YFLAGS = -d
+-
+-if CYGWIN
+-claws-mail$(EXEEXT): $(claws_mail_OBJECTS) $(claws_mail_DEPENDENCIES) 
+-	@rm -f claws-mail$(EXEEXT)
+-	@rm -f claws-mail.def claws-mail.base claws-mail.exp libclaws-mail.a .libs/libclaws-mail.a
+-	$(LINK) -shared $(claws_mailLDFLAGS) -Wl,--out-implib=libclaws-mail.a -Wl,--export-all-symbols,--exclude-symbols,main $(claws_mail_OBJECTS) -Wl,--no-whole-archive $(claws_mail_LDADD) $(LIBS)
+-	dlltool --output-def claws-mail.def --dllname claws-mail$(EXEEXT) --export-all-symbols --exclude-symbols main $(claws_mail_OBJECTS) gtk/.libs/libclawsgtk.a
+-	$(LINK) $(claws_mail_LDFLAGS) -Wl,--base-file,claws-mail.base $(claws_mail_OBJECTS) $(claws_mail_LDADD) $(LIBS)
+-	sleep 5
+-	dlltool --base-file claws-mail.base --input-def claws-mail.def --output-exp claws-mail.exp
+-	$(LINK) $(claws_mail_LDFLAGS) -Wl,claws-mail.exp $(claws_mail_OBJECTS) $(claws_mail_LDADD) $(LIBS)
+-	@cp libclaws-mail.a .libs/libclaws-mail.a
+-else
+-#claws-mail$(EXEEXT): $(claws_mail_OBJECTS) $(claws_mail_DEPENDENCIES) 
+-#	@rm -f claws-mail$(EXEEXT)
+-#	$(LINK) $(claws_mail_LDFLAGS) $(claws_mail_OBJECTS) $(claws_mail_LDADD) $(LIBS)
+-endif
+--- origsrc/claws-mail-3.7.0/src/plugins/bogofilter/Makefile.am	2008-10-10 02:17:55.000000000 -0500
++++ src/claws-mail-3.7.0/src/plugins/bogofilter/Makefile.am	2008-12-21 01:19:22.022426400 -0600
+@@ -6,15 +6,18 @@
+ 	bogofilter.c bogofilter.h \
+ 	bogofilter_gtk.c 
+ 
+-bogofilter_la_LDFLAGS = \
+-	-avoid-version -module
+-
+ if CYGWIN
+-cygwin_export_lib = -L$(top_builddir)/src -lclaws-mail
++cygwin_export_lib = -Wl,$(top_builddir)/src/libclaws-mail.a
++no_undefined = -no-undefined
+ else
+ cygwin_export_lib =
++no_undefined =
+ endif
+-bogofilter_la_LIBADD = $(cygwin_export_lib) \
++
++bogofilter_la_LDFLAGS = \
++	-avoid-version -module $(no_undefined) $(cygwin_export_lib)
++
++bogofilter_la_LIBADD = \
+ 	$(GTK_LIBS)	\
+ 	$(MAEMO_LIBS)
+ 
+--- origsrc/claws-mail-3.7.0/src/plugins/demo/Makefile.am	2007-05-30 19:01:14.000000000 -0500
++++ src/claws-mail-3.7.0/src/plugins/demo/Makefile.am	2008-12-21 01:17:11.647426400 -0600
+@@ -5,16 +5,18 @@
+ demo_la_SOURCES = \
+ 	demo.c
+ 
+-demo_la_LDFLAGS = \
+-	-avoid-version -module
+-
+ if CYGWIN
+-cygwin_export_lib = -L$(top_builddir)/src -lclaws-mail
++cygwin_export_lib = -Wl,$(top_builddir)/src/libclaws-mail.a
++no_undefined = -no-undefined
+ else
+ cygwin_export_lib = 
++no_undefined =
+ endif
+ 
+-demo_la_LIBADD = $(cygwin_export_lib) \
++demo_la_LDFLAGS = \
++	-avoid-version -module $(no_undefined) $(cygwin_export_lib)
++
++demo_la_LIBADD = \
+ 	$(GTK_LIBS) 
+ INCLUDES = \
+ 	-I$(top_srcdir)/src \
+--- origsrc/claws-mail-3.7.0/src/plugins/dillo_viewer/Makefile.am	2008-10-10 02:17:55.000000000 -0500
++++ src/claws-mail-3.7.0/src/plugins/dillo_viewer/Makefile.am	2008-12-21 01:17:41.506801400 -0600
+@@ -6,15 +6,18 @@
+          dillo_viewer.c \
+          dillo_prefs.c dillo_prefs.h
+ 
+-dillo_viewer_la_LDFLAGS = \
+-	-avoid-version -module
+-
+ if CYGWIN
+-cygwin_export_lib = -L$(top_builddir)/src -lclaws-mail
++cygwin_export_lib = -Wl,$(top_builddir)/src/libclaws-mail.a
++no_undefined = -no-undefined
+ else
+ cygwin_export_lib =
++no_undefined =
+ endif
+-dillo_viewer_la_LIBADD = $(cygwin_export_lib) \
++
++dillo_viewer_la_LDFLAGS = \
++	-avoid-version -module $(no_undefined) $(cygwin_export_lib)
++
++dillo_viewer_la_LIBADD = \
+ 	$(GTK_LIBS) \
+ 	$(MAEMO_LIBS)
+ 
+--- origsrc/claws-mail-3.7.0/src/plugins/pgpcore/Makefile.am	2007-12-27 15:26:33.000000000 -0600
++++ src/claws-mail-3.7.0/src/plugins/pgpcore/Makefile.am	2008-12-21 01:18:04.241176400 -0600
+@@ -36,7 +36,7 @@
+ endif
+ 
+ if CYGWIN
+-cygwin_export_lib = -L$(top_builddir)/src -lclaws-mail
++cygwin_export_lib = -Wl,$(top_builddir)/src/libclaws-mail.a
+ else
+ cygwin_export_lib =
+ endif
+@@ -63,9 +63,9 @@
+ 
+ pgpcore_la_LDFLAGS = \
+ 	$(plugin_res_ldflag) $(no_undefined) $(export_symbols) \
+-	-avoid-version -module 
++	-avoid-version -module $(cygwin_export_lib)
+ pgpcore_la_DEPENDENCIES = $(plugin_deps)
+-pgpcore_la_LIBADD = $(cygwin_export_lib) $(plugin_ldadd) \
++pgpcore_la_LIBADD = $(plugin_ldadd) \
+         $(GTK_LIBS) \
+ 	$(GPGME_LIBS) \
+ 	$(MAEMO_LIBS) \
+--- origsrc/claws-mail-3.7.0/src/plugins/pgpinline/Makefile.am	2007-12-27 15:26:34.000000000 -0600
++++ src/claws-mail-3.7.0/src/plugins/pgpinline/Makefile.am	2008-12-21 01:18:19.303676400 -0600
+@@ -40,7 +40,7 @@
+ endif
+ 
+ if CYGWIN
+-cygwin_export_lib = -L$(top_builddir)/src -lclaws-mail
++cygwin_export_lib = -Wl,$(top_builddir)/src/libclaws-mail.a
+ pgpcore_lib = ../pgpcore/pgpcore.la
+ else
+ cygwin_export_lib = 
+@@ -62,9 +62,9 @@
+ 
+ pgpinline_la_LDFLAGS = \
+ 	$(plugin_res_ldflag) $(no_undefined) $(export_symbols) \
+-	-avoid-version -module 
++	-avoid-version -module $(cygwin_export_lib)
+ pgpinline_la_DEPENDENCIES = $(plugin_deps)
+-pgpinline_la_LIBADD = $(plugin_ldadd) $(pgpcore_lib) $(cygwin_export_lib) \
++pgpinline_la_LIBADD = $(plugin_ldadd) $(pgpcore_lib) \
+         $(GTK_LIBS)  \
+ 	$(GPGME_LIBS) \
+ 	$(CONIC_LIBS)
+--- origsrc/claws-mail-3.7.0/src/plugins/pgpmime/Makefile.am	2007-12-27 15:26:35.000000000 -0600
++++ src/claws-mail-3.7.0/src/plugins/pgpmime/Makefile.am	2008-12-21 01:18:27.272426400 -0600
+@@ -39,7 +39,7 @@
+ endif
+ 
+ if CYGWIN
+-cygwin_export_lib = -L$(top_builddir)/src -lclaws-mail
++cygwin_export_lib = -Wl,$(top_builddir)/src/libclaws-mail.a
+ pgpcore_lib = ../pgpcore/pgpcore.la
+ else
+ pgpcore_lib = 
+@@ -61,9 +61,9 @@
+ 
+ pgpmime_la_LDFLAGS = \
+ 	$(plugin_res_ldflag) $(no_undefined) $(export_symbols) \
+-	-avoid-version -module 
++	-avoid-version -module $(cygwin_export_lib)
+ pgpmime_la_DEPENDENCIES = $(plugin_deps)
+-pgpmime_la_LIBADD = $(plugin_ldadd) $(pgpcore_lib) $(cygwin_export_lib) \
++pgpmime_la_LIBADD = $(plugin_ldadd) $(pgpcore_lib) \
+         $(GTK_LIBS) \
+ 	$(GPGME_LIBS) \
+ 	$(MAEMO_LIBS) \
+--- origsrc/claws-mail-3.7.0/src/plugins/smime/Makefile.am	2008-09-26 01:54:07.000000000 -0500
++++ src/claws-mail-3.7.0/src/plugins/smime/Makefile.am	2008-12-21 01:18:36.178676400 -0600
+@@ -40,7 +40,7 @@
+ endif
+ 
+ if CYGWIN
+-cygwin_export_lib = -L$(top_builddir)/src -lclaws-mail
++cygwin_export_lib = -Wl,$(top_builddir)/src/libclaws-mail.a
+ pgpcore_lib = ../pgpcore/pgpcore.la
+ else
+ cygwin_export_lib = 
+@@ -62,9 +62,9 @@
+ 
+ smime_la_LDFLAGS = \
+ 	$(plugin_res_ldflag) $(no_undefined) $(export_symbols) \
+-	-avoid-version -module 
++	-avoid-version -module $(cygwin_export_lib)
+ smime_la_DEPENDENCIES = $(plugin_deps)
+-smime_la_LIBADD = $(plugin_ldadd) $(pgpcore_lib) $(cygwin_export_lib) \
++smime_la_LIBADD = $(plugin_ldadd) $(pgpcore_lib) \
+         $(GTK_LIBS)  \
+ 	$(GPGME_LIBS) \
+ 	$(CONIC_LIBS)
+--- origsrc/claws-mail-3.7.0/src/plugins/spamassassin/Makefile.am	2008-10-10 02:17:55.000000000 -0500
++++ src/claws-mail-3.7.0/src/plugins/spamassassin/Makefile.am	2008-12-21 01:18:44.850551400 -0600
+@@ -8,15 +8,18 @@
+ 	libspamc.c libspamc.h \
+ 	utils.c utils.h
+ 
+-spamassassin_la_LDFLAGS = \
+-	-avoid-version -module
+-
+ if CYGWIN
+-cygwin_export_lib = -L$(top_builddir)/src -lclaws-mail
++cygwin_export_lib = -Wl,$(top_builddir)/src/libclaws-mail.a
++no_undefined = -no-undefined
+ else
+ cygwin_export_lib =
++no_undefined =
+ endif
+-spamassassin_la_LIBADD = $(cygwin_export_lib) \
++
++spamassassin_la_LDFLAGS = \
++	-avoid-version -module $(no_undefined) $(cygwin_export_lib)
++
++spamassassin_la_LIBADD = \
+ 	$(GTK_LIBS)	\
+ 	$(MAEMO_LIBS)
+ 
+--- origsrc/claws-mail-3.7.0/src/plugins/trayicon/Makefile.am	2008-10-10 02:17:55.000000000 -0500
++++ src/claws-mail-3.7.0/src/plugins/trayicon/Makefile.am	2008-12-21 01:19:12.834926400 -0600
+@@ -5,9 +5,11 @@
+ plugin_LTLIBRARIES = trayicon.la
+ 
+ if CYGWIN
+-cygwin_export_lib = -L$(top_builddir)/src -lclaws-mail
++cygwin_export_lib = -Wl,$(top_builddir)/src/libclaws-mail.a
++no_undefined = -no-undefined
+ else
+ cygwin_export_lib = 
++no_undefined = 
+ endif 
+ 
+ trayicon_la_SOURCES = \
+@@ -16,10 +18,9 @@
+ 	trayicon_prefs.h
+ 
+ trayicon_la_LDFLAGS = \
+-	-avoid-version -module -no-undefined
++	-avoid-version -module $(no_undefined) $(cygwin_export_lib)
+ 
+ trayicon_la_LIBADD = libeggtrayicon/libeggtrayicon.la \
+-	$(cygwin_export_lib) \
+ 	$(GTK_LIBS) \
+ 	-L/usr/X11R6/lib -lX11 \
+ 	$(MAEMO_LIBS)
