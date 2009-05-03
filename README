@@ -14,51 +14,50 @@ Lots of extra functionality, like an RSS aggregator, calendar, or laptop
 LED handling, are provided by extra plugins.
 
 Runtime requirements:
-  cygwin-1.5.25-15
+  cygwin-1.7.0-45
   compface-1.5.2-1
   crypt-1.1-1
-  libcairo2-1.8.6-1
-  libdbus-glib_1_2-0.78-1
-  libenchant1-1.4.2-2
-  libetpan13-0.57-1
+  libcairo2-1.8.6-10
+  libdbus-glib_1_2-0.80-10
+  libenchant1-1.4.2-10
+  libetpan13-0.57-10
   libgcrypt11-1.4.1-4
-  libgdk_pixbuf2.0_0-2.14.5-1
-  libglib2.0_0-2.18.3-1
+  libgdk_pixbuf2.0_0-2.16.1-1
+  libglib2.0_0-2.20.1-1
   libgnutls26-2.4.1-1
-  libgtk2.0_0-2.14.5-1
-  libICE6-1.0.4-2
-  libiconv2-1.12-1
-  libintl8-0.17-2
+  libgtk2.0_0-2.16.1-1
+  libICE6-1.0.4-10
+  libiconv2-1.12-10
+  libintl8-0.17-10
   libopenldap2_3_0-2.3.43-1
-  libpango1.0_0-1.22.3-1
-  libSM6-1.1.0-1
-  libstartup-notification1_0-0.9-2
-  minires-1.02-1
+  libpango1.0_0-1.24.1-1
+  libSM6-1.1.0-10
+  libstartup-notification1_0-0.10-1
 (bogofilter plugin)
   bogofilter
 (pgp* plugins)
-  libgpg-error0-1.6-1
+  libgpg-error-1.6-1
   libgpgme11-1.1.5-1
 (spamassassin plugin)
   spamassassin
 (trayicon plugin)
-  libX11_6-1.1.3-1
+  libX11_6-1.2-10
 
 Build requirements:
 (besides corresponding -devel packages)
-  autoconf2.5-2.63-1
-  automake1.10-1.10.1-2
+  autoconf2.5-2.63-10
+  automake1.10-1.10.1-10
   binutils-20080624-2
   bison-2.3-1
-  cygport-0.4.3-1
+  cygport-0.9.6-1
   flex-2.5.35-1
-  gawk-3.1.6-1
-  gcc-core-3.4.4-3
-  gettext-devel-0.17-2
-  gnome-common-2.24.0-1
-  libtool-2.2.6a-1
-  make-3.81-1
-  pkg-config-0.21-1
+  gawk-3.1.6-2
+  gcc4-core-4.3.2-2
+  gettext-devel-0.17-10
+  gnome-common-2.26.0-1
+  libtool-2.2.7a-12
+  make-3.81-2
+  pkg-config-0.23b-10
   sed-4.1.5-2
 
 Canonical website:
@@ -70,22 +69,22 @@ Canonical download:
 -------------------------------------------
 
 Build instructions:
-  unpack claws-mail-3.7.0-X-src.tar.bz2
+  unpack claws-mail-3.7.1-X-src.tar.bz2
     if you use setup to install this src package, it will be
 	 unpacked under /usr/src automatically
   cd /usr/src
-  cygport ./claws-mail-3.7.0-X.cygport all
+  cygport ./claws-mail-3.7.1-X.cygport all
 
 This will create:
-  /usr/src/claws-mail-3.7.0-X-src.tar.bz2
-  /usr/src/claws-mail-3.7.0-X.tar.bz2
-  /usr/src/claws-mail-bogofilter-3.7.0-X.tar.bz2
-  /usr/src/claws-mail-pgpcore-3.7.0-X.tar.bz2
-  /usr/src/claws-mail-pgpinline-3.7.0-X.tar.bz2
-  /usr/src/claws-mail-pgpmime-3.7.0-X.tar.bz2
-  /usr/src/claws-mail-smime-3.7.0-X.tar.bz2
-  /usr/src/claws-mail-spamassassin-3.7.0-X.tar.bz2
-  /usr/src/claws-mail-trayicon-3.7.0-X.tar.bz2
+  /usr/src/claws-mail-3.7.1-X-src.tar.bz2
+  /usr/src/claws-mail-3.7.1-X.tar.bz2
+  /usr/src/claws-mail-bogofilter-3.7.1-X.tar.bz2
+  /usr/src/claws-mail-pgpcore-3.7.1-X.tar.bz2
+  /usr/src/claws-mail-pgpinline-3.7.1-X.tar.bz2
+  /usr/src/claws-mail-pgpmime-3.7.1-X.tar.bz2
+  /usr/src/claws-mail-smime-3.7.1-X.tar.bz2
+  /usr/src/claws-mail-spamassassin-3.7.1-X.tar.bz2
+  /usr/src/claws-mail-trayicon-3.7.1-X.tar.bz2
 
 -------------------------------------------
 
@@ -96,31 +95,30 @@ Files included in the binary packages:
   /usr/bin/claws-mail.exe
   /usr/bin/sylpheed-claws
   /usr/share/applications/claws-mail.desktop
-  /usr/share/doc/claws-mail-3.7.0/ABOUT-NLS
-  /usr/share/doc/claws-mail-3.7.0/AUTHORS
-  /usr/share/doc/claws-mail-3.7.0/COPYING
-  /usr/share/doc/claws-mail-3.7.0/ChangeLog
-  /usr/share/doc/claws-mail-3.7.0/INSTALL
-  /usr/share/doc/claws-mail-3.7.0/NEWS
-  /usr/share/doc/claws-mail-3.7.0/README
-  /usr/share/doc/claws-mail-3.7.0/RELEASE_NOTES
-  /usr/share/doc/claws-mail-3.7.0/TODO
-  /usr/share/doc/claws-mail-3.7.0/manual/en/claws-mail-manual.html
-  /usr/share/doc/claws-mail-3.7.0/manual/en/claws-mail-manual.pdf
-  /usr/share/doc/claws-mail-3.7.0/manual/en/claws-mail-manual.ps
-  /usr/share/doc/claws-mail-3.7.0/manual/en/claws-mail-manual.txt
-  /usr/share/doc/claws-mail-3.7.0/manual/es/claws-mail-manual.html
-  /usr/share/doc/claws-mail-3.7.0/manual/es/claws-mail-manual.pdf
-  /usr/share/doc/claws-mail-3.7.0/manual/es/claws-mail-manual.ps
-  /usr/share/doc/claws-mail-3.7.0/manual/es/claws-mail-manual.txt
-  /usr/share/doc/claws-mail-3.7.0/manual/fr/claws-mail-manual.html
-  /usr/share/doc/claws-mail-3.7.0/manual/fr/claws-mail-manual.pdf
-  /usr/share/doc/claws-mail-3.7.0/manual/fr/claws-mail-manual.ps
-  /usr/share/doc/claws-mail-3.7.0/manual/fr/claws-mail-manual.txt
-  /usr/share/doc/claws-mail-3.7.0/manual/pl/claws-mail-manual.html
-  /usr/share/doc/claws-mail-3.7.0/manual/pl/claws-mail-manual.pdf
-  /usr/share/doc/claws-mail-3.7.0/manual/pl/claws-mail-manual.ps
-  /usr/share/doc/claws-mail-3.7.0/manual/pl/claws-mail-manual.txt
+  /usr/share/doc/claws-mail/ABOUT-NLS
+  /usr/share/doc/claws-mail/AUTHORS
+  /usr/share/doc/claws-mail/COPYING
+  /usr/share/doc/claws-mail/ChangeLog
+  /usr/share/doc/claws-mail/NEWS
+  /usr/share/doc/claws-mail/README
+  /usr/share/doc/claws-mail/RELEASE_NOTES
+  /usr/share/doc/claws-mail/TODO
+  /usr/share/doc/claws-mail/manual/en/claws-mail-manual.html
+  /usr/share/doc/claws-mail/manual/en/claws-mail-manual.pdf
+  /usr/share/doc/claws-mail/manual/en/claws-mail-manual.ps
+  /usr/share/doc/claws-mail/manual/en/claws-mail-manual.txt
+  /usr/share/doc/claws-mail/manual/es/claws-mail-manual.html
+  /usr/share/doc/claws-mail/manual/es/claws-mail-manual.pdf
+  /usr/share/doc/claws-mail/manual/es/claws-mail-manual.ps
+  /usr/share/doc/claws-mail/manual/es/claws-mail-manual.txt
+  /usr/share/doc/claws-mail/manual/fr/claws-mail-manual.html
+  /usr/share/doc/claws-mail/manual/fr/claws-mail-manual.pdf
+  /usr/share/doc/claws-mail/manual/fr/claws-mail-manual.ps
+  /usr/share/doc/claws-mail/manual/fr/claws-mail-manual.txt
+  /usr/share/doc/claws-mail/manual/pl/claws-mail-manual.html
+  /usr/share/doc/claws-mail/manual/pl/claws-mail-manual.pdf
+  /usr/share/doc/claws-mail/manual/pl/claws-mail-manual.ps
+  /usr/share/doc/claws-mail/manual/pl/claws-mail-manual.txt
   /usr/share/icons/hicolor/48x48/apps/claws-mail.png
   /usr/share/locale/bg/LC_MESSAGES/claws-mail.mo
   /usr/share/locale/ca/LC_MESSAGES/claws-mail.mo
@@ -396,14 +394,8 @@ Files included in the binary packages:
 
 Port Notes:
 
------ version 3.7.0-1 -----
-Version bump.
-
------ version 3.5.0-1 -----
-Version bump.
-
------ version 3.4.0-1 -----
-Initial release for Cygwin.
+----- version 3.7.1-1 -----
+Initial release for Cygwin 1.7.
 
 
 Cygwin port maintained by:

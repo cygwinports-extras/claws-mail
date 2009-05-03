@@ -23,7 +23,6 @@ DIFF_EXCLUDES="m4 po"
 ACLOCAL_FLAGS="-I m4"
 CYGCONF_ARGS="
 	--disable-dillo-viewer-plugin
-	--disable-ipv6
 	--disable-jpilot
 	--disable-networkmanager-support
 "
