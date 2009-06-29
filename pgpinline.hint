@@ -1,5 +1,5 @@
 category: Gnome Mail
-requires: cygwin claws-mail claws-mail-pgpcore libgcc1 libgnutls26 libgpgme11
+requires: claws-mail claws-mail-pgpcore libgcc1 libgnutls26 libgpgme11
 external-source: claws-mail
 sdesc: "Claws Mail PGP inline plugin"
 ldesc: "Places an icon in the system tray that indicates whether you 

@@ -1,5 +1,5 @@
 category: Gnome Mail
-requires: cygwin claws-mail libgcc1 spamassassin
+requires: claws-mail libgcc1 spamassassin
 external-source: claws-mail
 sdesc: "Claws Mail spamassassin plugin"
 ldesc: "Enables the scanning of incoming mail received from a POP, IMAP, 

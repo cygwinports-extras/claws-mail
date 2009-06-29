@@ -1,5 +1,5 @@
 category: Gnome Mail
-requires: cygwin claws-mail libetpan-devel libglib2.0-devel libgtk2.0-devel libgpgme-devel libiconv openldap-devel openssl-devel
+requires: claws-mail libetpan-devel libglib2.0-devel libgtk2.0-devel libgpgme-devel libiconv openldap-devel openssl-devel
 external-source: claws-mail
 sdesc: "GTK+ extensible email client (plugin development)"
 ldesc: "Claws Mail is an email client (and news reader), based on GTK+,
