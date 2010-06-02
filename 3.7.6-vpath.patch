@@ -1,0 +1,13 @@
+--- origsrc/claws-mail-3.7.6/src/plugins/trayicon/libeggtrayicon/Makefile.am	2010-03-24 13:59:42.000000000 -0500
++++ src/claws-mail-3.7.6/src/plugins/trayicon/libeggtrayicon/Makefile.am	2010-06-01 16:13:52.996914200 -0500
+@@ -5,8 +5,8 @@ libeggtrayicon_la_SOURCES = \
+ 
+ INCLUDES = \
+         -I../../../ \
+-	-I../../../common \
+-	-I../../../gtk 
++	-I$(top_srcdir)/common \
++	-I$(top_srcdir)/src/gtk 
+ 			
+ AM_CPPFLAGS = \
+ 	$(GTK_CFLAGS)

@@ -3,7 +3,11 @@ inherit gnome2
 DESCRIPTION="GTK+ mail client with plugin extensibility"
 HOMEPAGE="http://www.claws-mail.org/"
 SRC_URI="mirror://sourceforge/sylpheed-claws/${P}.tar.bz2"
-PATCH_URI="3.7.0-implib.patch"
+
+PATCH_URI="
+	3.7.0-implib.patch
+	3.7.6-vpath.patch
+"
 
 PKG_NAMES="${PN} ${PN}-devel"
 PKG_HINTS="setup devel"
