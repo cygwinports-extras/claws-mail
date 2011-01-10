@@ -1,5 +1,5 @@
 category: Gnome Mail
-requires: claws-mail libgcc1 libgnutls26 libgpg-error0 libgpgme11
+requires: claws-mail libgnutls26 libgpg-error0 libgpgme11
 external-source: claws-mail
 sdesc: "Claws Mail S/MIME plugin"
 ldesc: "Places an icon in the system tray that indicates whether you 

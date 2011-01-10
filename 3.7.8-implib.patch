@@ -298,7 +298,7 @@
 -	-avoid-version -module -no-undefined
 +	-avoid-version -module $(no_undefined) $(cygwin_export_lib)
  
- trayicon_la_LIBADD = libeggtrayicon/libeggtrayicon.la \
+ trayicon_la_LIBADD = \
 -	$(cygwin_export_lib) \
  	$(GTK_LIBS) \
  	-L/usr/X11R6/lib -lX11 \

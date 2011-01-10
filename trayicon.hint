@@ -1,5 +1,5 @@
 category: Gnome Mail
-requires: claws-mail libgcc1 libX11_6
+requires: claws-mail
 external-source: claws-mail
 sdesc: "Claws Mail tray icon plugin"
 ldesc: "Places an icon in the system tray that indicates whether you 

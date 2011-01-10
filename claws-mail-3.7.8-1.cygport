@@ -5,8 +5,7 @@ HOMEPAGE="http://www.claws-mail.org/"
 SRC_URI="mirror://sourceforge/sylpheed-claws/${P}.tar.bz2"
 
 PATCH_URI="
-	3.7.0-implib.patch
-	3.7.6-vpath.patch
+	3.7.8-implib.patch
 "
 
 PKG_NAMES="${PN} ${PN}-devel"
