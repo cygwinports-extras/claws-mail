@@ -6,6 +6,7 @@ SRC_URI="mirror://sourceforge/sylpheed-claws/${P}.tar.bz2"
 
 PATCH_URI="
 	3.7.8-implib.patch
+	3.8.0-cygwin-ldap.patch
 "
 
 PKG_NAMES="${PN} ${PN}-devel"
@@ -29,3 +30,4 @@ CYGCONF_ARGS="
 	--disable-jpilot
 	--disable-networkmanager-support
 "
+KEEP_LA_FILES="none"

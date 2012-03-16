@@ -1,0 +1,11 @@
+--- origsrc/claws-mail-3.8.0/configure.ac	2012-03-15 22:50:22.809359500 -0500
++++ src/claws-mail-3.8.0/configure.ac	2012-03-15 23:11:15.673019200 -0500
+@@ -669,7 +669,7 @@ elif test x"$ac_cv_enable_ldap" = xyes -
+ 	AC_MSG_RESULT(no - LDAP support needs pthread support)
+ 
+ 	ac_cv_enable_ldap=no
+-elif test x"$platform_win32" = xyes; then
++elif test x"$os_win32" = xyes; then
+ 	AC_MSG_RESULT(yes)
+ 	AC_DEFINE(USE_LDAP, 1, Define if you want LDAP support in addressbook.)
+ 	LDAP_LIBS="-lwldap32"
