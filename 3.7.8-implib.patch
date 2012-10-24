@@ -43,7 +43,7 @@
 +	@ln -s claws-mail$(EXEEXT) $(DESTDIR)$(bindir)/sylpheed-claws
  if PLATFORM_WIN32
 +	$(mkinstalldirs) $(DESTDIR)$(libdir)
-+	$(INSTALL_DATA) libclaws-mail.a $(DESTDIR)$(libdir)/libclaws-mail.a
++	$(INSTALL_DATA) libclaws-mail.a $(DESTDIR)$(libdir)/libclaws-mail.dll.a
 +endif
 +
 +if OS_WIN32

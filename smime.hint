@@ -1,8 +1,0 @@
-category: Gnome Mail
-requires: claws-mail libgnutls26 libgpg-error0 libgpgme11
-external-source: claws-mail
-sdesc: "Claws Mail S/MIME plugin"
-ldesc: "Places an icon in the system tray that indicates whether you 
-have any new mail. A tooltip also shows the current new, unread and 
-total number of messages, and a contextual menu allows the most common 
-operations."
