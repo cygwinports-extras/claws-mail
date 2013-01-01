@@ -9,3 +9,12 @@
  	AC_MSG_RESULT(yes)
  	AC_DEFINE(USE_LDAP, 1, Define if you want LDAP support in addressbook.)
  	LDAP_LIBS="-lwldap32"
+@@ -857,7 +857,7 @@ if test x"$enable_new_addrbook" = xno; t
+ 		AC_MSG_RESULT(no - LDAP support needs pthread support)
+ 
+ 		ac_cv_enable_ldap=no
+-	elif test x"$platform_win32" = xyes; then
++	elif test x"$os_win32" = xyes; then
+ 		AC_MSG_RESULT(yes)
+ 		AC_DEFINE(USE_LDAP, 1, Define if you want LDAP support in addressbook.)
+ 		LDAP_LIBS="-lwldap32"

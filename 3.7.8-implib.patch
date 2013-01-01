@@ -1,11 +1,10 @@
 --- origsrc/claws-mail-3.7.0/claws-mail.pc.in	2008-10-10 02:17:52.000000000 -0500
 +++ src/claws-mail-3.7.0/claws-mail.pc.in	2008-12-21 00:24:38.084926400 -0600
-@@ -11,4 +11,5 @@
- Description: Claws Mail
+@@ -12,3 +12,4 @@
  Version: @MAJOR_VERSION@.@MINOR_VERSION@.@MICRO_VERSION@.@EXTRA_VERSION@
  
+ Cflags: -I${pkgincludedir}/common -I${pkgincludedir}/gtk @ENCHANT_CFLAGS@ @GPGME_CFLAGS@ -I${pkgincludedir}
 +Libs: -L${libdir} @CLAWS_IMPLIB@
- Cflags: @ENCHANT_CFLAGS@ @GPGME_CFLAGS@ -I${pkgincludedir} -I${pkgincludedir}/common -I${pkgincludedir}/gtk
 --- origsrc/claws-mail-3.7.0/configure.ac	2008-12-19 05:15:11.000000000 -0600
 +++ src/claws-mail-3.7.0/configure.ac	2008-12-21 00:24:38.100551400 -0600
 @@ -101,15 +101,22 @@

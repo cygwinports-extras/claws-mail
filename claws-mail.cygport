@@ -1,8 +1,8 @@
 inherit gnome2
 
 NAME="claws-mail"
-VERSION=3.8.0
-RELEASE=3
+VERSION=3.9.0
+RELEASE=1
 CATEGORY="Mail"
 SUMMARY="GTK+ mail client with plugin extensibility"
 DESCRIPTION="Claws Mail is an email client (and news reader), based on GTK+,
@@ -14,8 +14,7 @@ HOMEPAGE="http://www.claws-mail.org/"
 SRC_URI="mirror://sourceforge/sylpheed-claws/${P}.tar.bz2"
 
 PATCH_URI="
-	http://pkgs.fedoraproject.org/cgit/claws-mail.git/plain/claws-mail-procmime.patch
-	http://www.thewildbeast.co.uk/claws-mail/bugzilla/attachment.cgi?id=1104
+	http://pkgs.fedoraproject.org/cgit/claws-mail.git/plain/claws-mail-3.9.0cvs5.patch
 	3.7.8-implib.patch
 	3.8.0-cygwin-ldap.patch
 "
@@ -36,7 +35,7 @@ claws_mail_bogofilter_REQUIRES="bogofilter"
 claws_mail_spamassassin_REQUIRES="spamassassin"
 
 DEPS_PATH="/usr/lib/${PN}/plugins"
-DIFF_EXCLUDES="m4 po"
+DIFF_EXCLUDES="claws-features.h"
 
 ACLOCAL_FLAGS="-I m4"
 CYGCONF_ARGS="
@@ -44,4 +43,3 @@ CYGCONF_ARGS="
 	--disable-jpilot
 	--disable-networkmanager-support
 "
-KEEP_LA_FILES="none"
