@@ -17,9 +17,11 @@ PATCH_URI="
 	http://pkgs.fedoraproject.org/cgit/claws-mail.git/plain/claws-mail-3.9.0cvs5.patch
 	3.7.8-implib.patch
 	3.8.0-cygwin-ldap.patch
+	3.9.0-ca-certs.patch
 "
 
 PKG_NAMES="${PN} ${PN}-devel"
+claws_mail_REQUIRES="ca-certificates"
 claws_mail_CONTENTS="etc/ usr/bin/ usr/share/"
 claws_mail_devel_SUMMARY="Claws Mail plugin development"
 claws_mail_devel_REQUIRES="libenchant-devel libetpan-devel libglib2.0-devel gnutls-devel libgpgme-devel libgtk2.0-devel openldap-devel"
