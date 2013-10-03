@@ -1,0 +1,774 @@
+--- origsrc/claws-mail-3.9.2/claws-mail.pc.in	2013-10-03 17:56:24.603872100 -0500
++++ src/claws-mail-3.9.2/claws-mail.pc.in	2013-10-03 15:25:44.000000000 -0500
+@@ -12,3 +12,4 @@ Description: Claws Mail
+ Version: @MAJOR_VERSION@.@MINOR_VERSION@.@MICRO_VERSION@.@EXTRA_VERSION@
+ 
+ Cflags: -I${pkgincludedir}/common -I${pkgincludedir}/gtk @ENCHANT_CFLAGS@ @GPGME_CFLAGS@ -I${pkgincludedir}
++Libs: -L${libdir} @CLAWS_IMPLIB@
+--- origsrc/claws-mail-3.9.2/configure.ac	2013-10-03 17:56:24.607872400 -0500
++++ src/claws-mail-3.9.2/configure.ac	2013-10-03 16:46:34.115189900 -0500
+@@ -115,15 +115,22 @@ dnl AC_CANONICAL_HOST
+ dnl Copied from the official gtk+-2 configure.in
+ AC_MSG_CHECKING([for some Win32 platform])
+ case "$host" in
+-  *-*-mingw*|*-*-cygwin*)
++  *-*-cygwin*)
++    platform_win32=yes
++    CLAWS_IMPLIB="-lclaws-mail"
++    ;;
++  *-*-mingw*)
+     platform_win32=yes
+     LDFLAGS="$LDFLAGS -mwindows"
++    CLAWS_IMPLIB="-lclaws-mail"
+     ;;
+   *)
+     platform_win32=no
++    CLAWS_IMPLIB=
+     ;;
+ esac
+ AC_MSG_RESULT([$platform_win32])
++AC_SUBST(CLAWS_IMPLIB)
+ AM_CONDITIONAL(PLATFORM_WIN32, test x"$platform_win32" = x"yes")
+ 
+ AC_MSG_CHECKING([for native Win32])
+--- origsrc/claws-mail-3.9.2/src/Makefile.am	2013-10-03 17:56:24.610872500 -0500
++++ src/claws-mail-3.9.2/src/Makefile.am	2013-10-03 15:25:44.000000000 -0500
+@@ -12,9 +12,13 @@ SUBDIRS = common gtk $(etpan_dir) . plug
+ bin_PROGRAMS = claws-mail
+ install-exec-hook:
+ 	@rm -f $(DESTDIR)$(bindir)/sylpheed-claws
+-	@ln -s claws-mail $(DESTDIR)$(bindir)/sylpheed-claws
+-
++	@ln -s claws-mail$(EXEEXT) $(DESTDIR)$(bindir)/sylpheed-claws
+ if PLATFORM_WIN32
++	$(mkinstalldirs) $(DESTDIR)$(libdir)
++	$(INSTALL_DATA) libclaws-mail.dll.a $(DESTDIR)$(libdir)/libclaws-mail.dll.a
++endif
++
++if OS_WIN32
+ LTRCCOMPILE = $(LIBTOOL) --mode=compile --tag=RC $(RC) \
+      `echo $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) | \
+      sed -e 's/-I/--include-dir /g;s/-D/--define /g'`
+@@ -532,7 +536,7 @@ INCLUDES = \
+ 	-I$(srcdir)/etpan
+ 
+ if PLATFORM_WIN32
+-arch_ldflags := -export-all-symbols
++arch_ldflags := -Wl,--export-all-symbols,--out-implib,libclaws-mail.dll.a
+ else
+ arch_ldflags :=
+ endif
+@@ -593,20 +597,3 @@ AM_CPPFLAGS = \
+ #to call inside gpgme due to our lack of LARGEFILE support
+ 
+ AM_YFLAGS = -d
+-
+-if CYGWIN
+-claws-mail$(EXEEXT): $(claws_mail_OBJECTS) $(claws_mail_DEPENDENCIES) 
+-	@rm -f claws-mail$(EXEEXT)
+-	@rm -f claws-mail.def claws-mail.base claws-mail.exp libclaws-mail.a .libs/libclaws-mail.a
+-	$(LINK) -shared $(claws_mailLDFLAGS) -Wl,--out-implib=libclaws-mail.a -Wl,--export-all-symbols,--exclude-symbols,main $(claws_mail_OBJECTS) -Wl,--no-whole-archive $(claws_mail_LDADD) $(LIBS)
+-	dlltool --output-def claws-mail.def --dllname claws-mail$(EXEEXT) --export-all-symbols --exclude-symbols main $(claws_mail_OBJECTS) gtk/.libs/libclawsgtk.a
+-	$(LINK) $(claws_mail_LDFLAGS) -Wl,--base-file,claws-mail.base $(claws_mail_OBJECTS) $(claws_mail_LDADD) $(LIBS)
+-	sleep 5
+-	dlltool --base-file claws-mail.base --input-def claws-mail.def --output-exp claws-mail.exp
+-	$(LINK) $(claws_mail_LDFLAGS) -Wl,claws-mail.exp $(claws_mail_OBJECTS) $(claws_mail_LDADD) $(LIBS)
+-	@cp libclaws-mail.a .libs/libclaws-mail.a
+-else
+-#claws-mail$(EXEEXT): $(claws_mail_OBJECTS) $(claws_mail_DEPENDENCIES) 
+-#	@rm -f claws-mail$(EXEEXT)
+-#	$(LINK) $(claws_mail_LDFLAGS) $(claws_mail_OBJECTS) $(claws_mail_LDADD) $(LIBS)
+-endif
+--- origsrc/claws-mail-3.9.2/src/plugins/address_keeper/Makefile.am	2013-10-03 17:56:24.614872800 -0500
++++ src/claws-mail-3.9.2/src/plugins/address_keeper/Makefile.am	2013-10-03 15:34:12.577868200 -0500
+@@ -36,7 +36,7 @@ no_undefined =
+ endif
+ 
+ if CYGWIN
+-cygwin_export_lib = -L$(top_builddir)/src -lclaws-mail
++cygwin_export_lib = -Wl,$(top_builddir)/src/libclaws-mail.dll.a
+ else
+ cygwin_export_lib = 
+ endif
+@@ -49,12 +49,13 @@ endif
+ 
+ address_keeper_la_LDFLAGS = \
+ 	$(plugin_res_ldflag) $(no_undefined) $(export_symbols) \
++	$(cygwin_export_lib) \
+ 	-avoid-version -module \
+ 	$(GTK_LIBS)
+ 
+ address_keeper_la_DEPENDENCIES = $(plugin_deps)
+ 
+-address_keeper_la_LIBADD = $(plugin_ldadd) $(cygwin_export_lib) \
++address_keeper_la_LIBADD = $(plugin_ldadd) \
+ 	$(GTK_LIBS)
+ 
+ INCLUDES = \
+--- origsrc/claws-mail-3.9.2/src/plugins/archive/Makefile.am	2013-10-03 17:56:24.617872900 -0500
++++ src/claws-mail-3.9.2/src/plugins/archive/Makefile.am	2013-10-03 15:25:44.000000000 -0500
+@@ -1,3 +1,15 @@
++if PLATFORM_WIN32
++no_undefined = -no-undefined
++else
++no_undefined =
++endif
++
++if CYGWIN
++cygwin_export_lib = -Wl,$(top_builddir)/src/libclaws-mail.dll.a
++else
++cygwin_export_lib = 
++endif
++
+ plugindir = $(pkglibdir)/plugins
+ 
+ if BUILD_ARCHIVE_PLUGIN
+@@ -18,6 +30,7 @@ archiveinclude_HEADERS = \
+ 	archiver_prefs.h
+ 
+ archive_la_LDFLAGS = \
++		$(no_undefined) $(cygwin_export_lib) \
+ 		-avoid-version -module \
+ 		$(GTK_LIBS)
+ 
+--- origsrc/claws-mail-3.9.2/src/plugins/att_remover/Makefile.am	2013-10-03 17:56:24.620873100 -0500
++++ src/claws-mail-3.9.2/src/plugins/att_remover/Makefile.am	2013-10-03 15:34:36.157216800 -0500
+@@ -36,7 +36,7 @@ no_undefined =
+ endif
+ 
+ if CYGWIN
+-cygwin_export_lib = -L$(top_builddir)/src -lclaws-mail
++cygwin_export_lib = -Wl,$(top_builddir)/src/libclaws-mail.dll.a
+ else
+ cygwin_export_lib = 
+ endif
+@@ -52,10 +52,11 @@ att_remover_la_SOURCES = \
+ 
+ att_remover_la_LDFLAGS = \
+ 	$(plugin_res_ldflag) $(no_undefined) $(export_symbols) \
++	$(cygwin_export_lib) \
+ 	-avoid-version -module \
+ 	$(GTK_LIBS)
+ 
+-att_remover_la_LIBADD = $(plugin_ldadd) $(cygwin_export_lib) \
++att_remover_la_LIBADD = $(plugin_ldadd) \
+ 	$(GTK_LIBS)
+ 
+ att_remover_la_DEPENDENCIES = $(plugin_deps)
+--- origsrc/claws-mail-3.9.2/src/plugins/attachwarner/Makefile.am	2013-10-03 17:56:24.623873300 -0500
++++ src/claws-mail-3.9.2/src/plugins/attachwarner/Makefile.am	2013-10-03 15:34:53.148188700 -0500
+@@ -36,7 +36,7 @@ no_undefined =
+ endif
+ 
+ if CYGWIN
+-cygwin_export_lib = -L$(top_builddir)/src -lclaws-mail
++cygwin_export_lib = -Wl,$(top_builddir)/src/libclaws-mail.dll.a
+ else
+ cygwin_export_lib = 
+ endif
+@@ -49,12 +49,13 @@ endif
+ 
+ attachwarner_la_LDFLAGS = \
+ 	$(plugin_res_ldflag) $(no_undefined) $(export_symbols) \
++	$(cygwin_export_lib) \
+ 	-avoid-version -module \
+ 	$(GTK_LIBS)
+ 
+ attachwarner_la_DEPENDENCIES = $(plugin_deps)
+ 
+-attachwarner_la_LIBADD = $(plugin_ldadd) $(cygwin_export_lib) \
++attachwarner_la_LIBADD = $(plugin_ldadd) \
+ 	$(GTK_LIBS)
+ 
+ INCLUDES = \
+--- origsrc/claws-mail-3.9.2/src/plugins/bogofilter/Makefile.am	2013-10-03 17:56:24.626873500 -0500
++++ src/claws-mail-3.9.2/src/plugins/bogofilter/Makefile.am	2013-10-03 15:35:07.892032000 -0500
+@@ -8,15 +8,18 @@ bogofilter_la_SOURCES = \
+ 	bogofilter.c bogofilter.h \
+ 	bogofilter_gtk.c 
+ 
+-bogofilter_la_LDFLAGS = \
+-	-avoid-version -module
+-
+ if CYGWIN
+-cygwin_export_lib = -L$(top_builddir)/src -lclaws-mail
++cygwin_export_lib = -Wl,$(top_builddir)/src/libclaws-mail.dll.a
++no_undefined = -no-undefined
+ else
+ cygwin_export_lib =
++no_undefined =
+ endif
+-bogofilter_la_LIBADD = $(cygwin_export_lib) \
++
++bogofilter_la_LDFLAGS = \
++	-avoid-version -module $(no_undefined) $(cygwin_export_lib)
++
++bogofilter_la_LIBADD = \
+ 	$(GTK_LIBS)	\
+ 	$(MAEMO_LIBS)
+ 
+--- origsrc/claws-mail-3.9.2/src/plugins/bsfilter/Makefile.am	2013-10-03 17:56:24.629873600 -0500
++++ src/claws-mail-3.9.2/src/plugins/bsfilter/Makefile.am	2013-10-03 15:35:25.660048200 -0500
+@@ -36,7 +36,7 @@ no_undefined =
+ endif
+ 
+ if CYGWIN
+-cygwin_export_lib = -L$(top_builddir)/src -lclaws-mail
++cygwin_export_lib = -Wl,$(top_builddir)/src/libclaws-mail.dll.a
+ else
+ cygwin_export_lib = 
+ endif
+@@ -49,12 +49,13 @@ endif
+ 
+ bsfilter_la_LDFLAGS = \
+ 	$(plugin_res_ldflag) $(no_undefined) $(export_symbols) \
++	$(cygwin_export_lib) \
+ 	-avoid-version -module \
+ 	$(GTK_LIBS)
+ 
+ bsfilter_la_DEPENDENCIES = $(plugin_deps)
+ 
+-bsfilter_la_LIBADD = $(plugin_ldadd) $(cygwin_export_lib) \
++bsfilter_la_LIBADD = $(plugin_ldadd) \
+ 	$(GTK_LIBS)
+ 
+ INCLUDES = \
+--- origsrc/claws-mail-3.9.2/src/plugins/clamd/Makefile.am	2013-10-03 17:56:24.633873900 -0500
++++ src/claws-mail-3.9.2/src/plugins/clamd/Makefile.am	2013-10-03 15:25:44.000000000 -0500
+@@ -1,3 +1,15 @@
++if PLATFORM_WIN32
++no_undefined = -no-undefined
++else
++no_undefined =
++endif
++
++if CYGWIN
++cygwin_export_lib = -Wl,$(top_builddir)/src/libclaws-mail.dll.a
++else
++cygwin_export_lib =
++endif
++
+ SUBDIRS = libclamd
+ plugindir = $(pkglibdir)/plugins
+ 
+@@ -11,6 +23,7 @@ clamd_la_SOURCES = \
+ 	clamav_plugin.h
+ 
+ clamd_la_LDFLAGS = \
++	$(no_undefined) $(cygwin_export_lib) \
+ 	-avoid-version -module \
+ 	$(GTK_LIBS) \
+ 	-L$(top_builddir)/src/plugins/clamd/libclamd
+--- origsrc/claws-mail-3.9.2/src/plugins/demo/Makefile.am	2013-10-03 17:56:24.636874000 -0500
++++ src/claws-mail-3.9.2/src/plugins/demo/Makefile.am	2013-10-03 15:35:51.169507300 -0500
+@@ -7,16 +7,22 @@ endif
+ demo_la_SOURCES = \
+ 	demo.c
+ 
+-demo_la_LDFLAGS = \
+-	-avoid-version -module
++if PLATFORM_WIN32
++no_undefined = -no-undefined
++else
++no_undefined =
++endif
+ 
+ if CYGWIN
+-cygwin_export_lib = -L$(top_builddir)/src -lclaws-mail
++cygwin_export_lib = -Wl,$(top_builddir)/src/libclaws-mail.dll.a
+ else
+ cygwin_export_lib = 
+ endif
+ 
+-demo_la_LIBADD = $(cygwin_export_lib) \
++demo_la_LDFLAGS = \
++	-avoid-version -module $(no_undefined) $(cygwin_export_lib)
++
++demo_la_LIBADD = \
+ 	$(GTK_LIBS) 
+ INCLUDES = \
+ 	-I$(top_srcdir)/src \
+--- origsrc/claws-mail-3.9.2/src/plugins/fancy/Makefile.am	2013-10-03 17:56:24.639874200 -0500
++++ src/claws-mail-3.9.2/src/plugins/fancy/Makefile.am	2013-10-03 15:36:14.099818800 -0500
+@@ -36,7 +36,7 @@ no_undefined =
+ endif
+ 
+ if CYGWIN
+-cygwin_export_lib = -L$(top_builddir)/src -lclaws-mail
++cygwin_export_lib = -Wl,$(top_builddir)/src/libclaws-mail.dll.a
+ else
+ cygwin_export_lib = 
+ endif
+@@ -49,7 +49,7 @@ endif
+ 
+ fancy_la_DEPENDENCIES = $(plugin_deps)
+ 
+-fancy_la_LIBADD = $(plugin_ldadd) $(cygwin_export_lib) \
++fancy_la_LIBADD = $(plugin_ldadd) \
+ 	$(GTK_LIBS)
+ 
+ fancy_la_SOURCES = \
+@@ -60,6 +60,7 @@ fancy_la_SOURCES = \
+ 
+ fancy_la_LDFLAGS = \
+ 	$(plugin_res_ldflag) $(no_undefined) $(export_symbols) \
++	$(cygwin_export_lib) \
+ 	-avoid-version -module \
+ 	$(GTK_LIBS) \
+ 	$(WEBKIT_LIBS) \
+--- origsrc/claws-mail-3.9.2/src/plugins/fetchinfo/Makefile.am	2013-10-03 17:56:24.642874400 -0500
++++ src/claws-mail-3.9.2/src/plugins/fetchinfo/Makefile.am	2013-10-03 15:36:26.615534700 -0500
+@@ -34,7 +34,7 @@ no_undefined =
+ endif
+ 
+ if CYGWIN
+-cygwin_export_lib = -L$(top_builddir)/src -lclaws-mail
++cygwin_export_lib = -Wl,$(top_builddir)/src/libclaws-mail.dll.a
+ else
+ cygwin_export_lib = 
+ endif
+@@ -51,10 +51,11 @@ fetchinfo_la_SOURCES = \
+ 
+ fetchinfo_la_LDFLAGS = \
+ 	$(plugin_res_ldflag) $(no_undefined) $(export_symbols) \
++	$(cygwin_export_lib) \
+ 	-avoid-version -module \
+ 	$(GTK_LIBS)
+ 
+-fetchinfo_la_LIBADD = $(plugin_ldadd) $(cygwin_export_lib) \
++fetchinfo_la_LIBADD = $(plugin_ldadd) \
+ 	$(GTK_LIBS)
+ 
+ fetchinfo_la_DEPENDENCIES = $(plugin_deps)
+--- origsrc/claws-mail-3.9.2/src/plugins/gdata/Makefile.am	2013-10-03 17:56:24.645874500 -0500
++++ src/claws-mail-3.9.2/src/plugins/gdata/Makefile.am	2013-10-03 15:36:39.187253700 -0500
+@@ -1,3 +1,15 @@
++if PLATFORM_WIN32
++no_undefined = -no-undefined
++else
++no_undefined =
++endif
++
++if CYGWIN
++cygwin_export_lib = -Wl,$(top_builddir)/src/libclaws-mail.dll.a
++else
++cygwin_export_lib =
++endif
++
+ plugindir = $(pkglibdir)/plugins
+ 
+ if BUILD_GDATA_PLUGIN
+@@ -13,6 +25,7 @@ gdata_la_SOURCES = \
+ 	cm_gdata_prefs.h
+ 
+ gdata_la_LDFLAGS = \
++	$(no_undefined) $(cygwin_export_lib) \
+ 	-avoid-version -module \
+ 	$(GTK_LIBS) \
+ 	$(GDATA_LIBS)
+--- origsrc/claws-mail-3.9.2/src/plugins/geolocation/Makefile.am	2013-10-03 17:56:24.648874700 -0500
++++ src/claws-mail-3.9.2/src/plugins/geolocation/Makefile.am	2013-10-03 15:44:06.477837300 -0500
+@@ -1,3 +1,15 @@
++if PLATFORM_WIN32
++no_undefined = -no-undefined
++else
++no_undefined =
++endif
++
++if CYGWIN
++cygwin_export_lib = -Wl,$(top_builddir)/src/libclaws-mail.dll.a
++else
++cygwin_export_lib =
++endif
++
+ plugindir = $(pkglibdir)/plugins
+ 
+ if BUILD_GEOLOCATION_PLUGIN
+@@ -9,6 +21,7 @@ geolocation_la_SOURCES = \
+ 	pixmap_earth.h
+ 
+ geolocation_la_LDFLAGS = \
++	$(no_undefined) $(cygwin_export_lib) \
+ 	-avoid-version -module \
+ 	$(GTK_LIBS) \
+ 	$(LIBSOUP_LIBS) \
+--- origsrc/claws-mail-3.9.2/src/plugins/mailmbox/Makefile.am	2013-10-03 17:56:24.652874900 -0500
++++ src/claws-mail-3.9.2/src/plugins/mailmbox/Makefile.am	2013-10-03 15:37:14.832292500 -0500
+@@ -36,7 +36,7 @@ no_undefined =
+ endif
+ 
+ if CYGWIN
+-cygwin_export_lib = -L$(top_builddir)/src -lclaws-mail
++cygwin_export_lib = -Wl,$(top_builddir)/src/libclaws-mail.dll.a
+ else
+ cygwin_export_lib = 
+ endif
+@@ -67,6 +67,7 @@ mailmbox_la_SOURCES = \
+ 	plugin_gtk.h
+ 
+ mailmbox_la_LDFLAGS = \
++	$(no_undefined) $(cygwin_export_lib) \
+ 	-avoid-version -module
+ 
+ mailmbox_la_LIBADD = \
+--- origsrc/claws-mail-3.9.2/src/plugins/newmail/Makefile.am	2013-10-03 17:56:24.655875100 -0500
++++ src/claws-mail-3.9.2/src/plugins/newmail/Makefile.am	2013-10-03 17:02:57.211419800 -0500
+@@ -1,3 +1,15 @@
++if PLATFORM_WIN32
++no_undefined = -no-undefined
++else
++no_undefined =
++endif
++
++if CYGWIN
++cygwin_export_lib = -Wl,$(top_builddir)/src/libclaws-mail.dll.a
++else
++cygwin_export_lib =
++endif
++
+ plugindir = $(pkglibdir)/plugins
+ 
+ if BUILD_NEWMAIL_PLUGIN
+@@ -8,8 +20,12 @@ newmail_la_SOURCES = \
+ 	newmail.c
+ 
+ newmail_la_LDFLAGS = \
++	$(no_undefined) $(cygwin_export_lib) \
+ 	-avoid-version -module
+ 
++newmail_la_LIBADD = \
++	$(GLIB_LIBS)
++
+ AM_CPPFLAGS = \
+         $(CLAWS_MAIL_CFLAGS) \
+ 	$(GLIB_CFLAGS) \
+--- origsrc/claws-mail-3.9.2/src/plugins/notification/Makefile.am	2013-10-03 17:56:24.658875300 -0500
++++ src/claws-mail-3.9.2/src/plugins/notification/Makefile.am	2013-10-03 15:37:51.725402700 -0500
+@@ -46,7 +46,7 @@ no_undefined =
+ endif
+ 
+ if CYGWIN
+-cygwin_export_lib = -L$(top_builddir)/src -lclaws-mail
++cygwin_export_lib = -Wl,$(top_builddir)/src/libclaws-mail.dll.a
+ else
+ cygwin_export_lib = 
+ endif
+@@ -74,6 +74,7 @@ notification_la_SOURCES = \
+ 
+ notification_la_LDFLAGS = \
+ 	$(plugin_res_ldflag) $(no_undefined) $(export_symbols) \
++	$(cygwin_export_lib) \
+ 	-avoid-version -module
+ 
+ notification_la_DEPENDENCIES = $(plugin_deps) \
+@@ -87,7 +88,7 @@ INCLUDES = \
+ 	-I$(top_srcdir)/src/gtk
+ 
+ 
+-notification_la_LIBADD = $(plugin_ldadd) $(cygwin_export_lib) \
++notification_la_LIBADD = $(plugin_ldadd) \
+         $(GTK_LIBS)  \
+ 	$(libnotify_LIBS) \
+ 	$(libindicate_LIBS) \
+--- origsrc/claws-mail-3.9.2/src/plugins/pdf_viewer/Makefile.am	2013-10-03 17:56:24.661875500 -0500
++++ src/claws-mail-3.9.2/src/plugins/pdf_viewer/Makefile.am	2013-10-03 15:38:06.199230500 -0500
+@@ -1,3 +1,15 @@
++if PLATFORM_WIN32
++no_undefined = -no-undefined
++else
++no_undefined =
++endif
++
++if CYGWIN
++cygwin_export_lib = -Wl,$(top_builddir)/src/libclaws-mail.dll.a
++else
++cygwin_export_lib =
++endif
++
+ plugindir = $(pkglibdir)/plugins
+ 
+ if BUILD_PDF_VIEWER_PLUGIN
+@@ -9,6 +21,7 @@ pdf_viewer_la_SOURCES = \
+          poppler_viewer.h
+ 
+ pdf_viewer_la_LDFLAGS = \
++	$(no_undefined) $(cygwin_export_lib) \
+ 	-avoid-version -module \
+ 	$(GTK_LIBS) \
+ 	$(POPPLER_LIBS)
+--- origsrc/claws-mail-3.9.2/src/plugins/perl/Makefile.am	2013-10-03 17:56:24.665875700 -0500
++++ src/claws-mail-3.9.2/src/plugins/perl/Makefile.am	2013-10-03 15:38:16.627827000 -0500
+@@ -1,3 +1,15 @@
++if PLATFORM_WIN32
++no_undefined = -no-undefined
++else
++no_undefined =
++endif
++
++if CYGWIN
++cygwin_export_lib = -Wl,$(top_builddir)/src/libclaws-mail.dll.a
++else
++cygwin_export_lib =
++endif
++
+ SUBDIRS = tools
+ 
+ plugindir = $(pkglibdir)/plugins
+@@ -11,6 +23,7 @@ perl_la_SOURCES = \
+ 	perl_gtk.c perl_gtk.h
+ 
+ perl_la_LDFLAGS = \
++	$(no_undefined) $(cygwin_export_lib) \
+ 	-avoid-version -module
+ 
+ perl_la_LIBADD = \
+--- origsrc/claws-mail-3.9.2/src/plugins/pgpcore/Makefile.am	2013-10-03 17:56:24.668875900 -0500
++++ src/claws-mail-3.9.2/src/plugins/pgpcore/Makefile.am	2013-10-03 15:25:44.000000000 -0500
+@@ -36,7 +36,7 @@ no_undefined =
+ endif
+ 
+ if CYGWIN
+-cygwin_export_lib = -L$(top_builddir)/src -lclaws-mail
++cygwin_export_lib = -Wl,$(top_builddir)/src/libclaws-mail.dll.a
+ else
+ cygwin_export_lib =
+ endif
+@@ -65,9 +65,9 @@ plugininclude_HEADERS = \
+ 
+ pgpcore_la_LDFLAGS = \
+ 	$(plugin_res_ldflag) $(no_undefined) $(export_symbols) \
+-	-avoid-version -module 
++	-avoid-version -module $(cygwin_export_lib)
+ pgpcore_la_DEPENDENCIES = $(plugin_deps)
+-pgpcore_la_LIBADD = $(cygwin_export_lib) $(plugin_ldadd) \
++pgpcore_la_LIBADD = $(plugin_ldadd) \
+         $(GTK_LIBS) \
+ 	$(GPGME_LIBS) \
+ 	$(MAEMO_LIBS) \
+--- origsrc/claws-mail-3.9.2/src/plugins/pgpinline/Makefile.am	2013-10-03 17:56:24.671876000 -0500
++++ src/claws-mail-3.9.2/src/plugins/pgpinline/Makefile.am	2013-10-03 15:25:44.000000000 -0500
+@@ -40,7 +40,7 @@ no_undefined =
+ endif
+ 
+ if CYGWIN
+-cygwin_export_lib = -L$(top_builddir)/src -lclaws-mail
++cygwin_export_lib = -Wl,$(top_builddir)/src/libclaws-mail.dll.a
+ pgpcore_lib = ../pgpcore/pgpcore.la
+ else
+ cygwin_export_lib = 
+@@ -64,9 +64,9 @@ plugininclude_HEADERS = \
+ 
+ pgpinline_la_LDFLAGS = \
+ 	$(plugin_res_ldflag) $(no_undefined) $(export_symbols) \
+-	-avoid-version -module 
++	-avoid-version -module $(cygwin_export_lib)
+ pgpinline_la_DEPENDENCIES = $(plugin_deps)
+-pgpinline_la_LIBADD = $(plugin_ldadd) $(pgpcore_lib) $(cygwin_export_lib) \
++pgpinline_la_LIBADD = $(plugin_ldadd) $(pgpcore_lib) \
+         $(GTK_LIBS)  \
+ 	$(GPGME_LIBS) \
+ 	$(CONIC_LIBS)
+--- origsrc/claws-mail-3.9.2/src/plugins/pgpmime/Makefile.am	2013-10-03 17:56:24.674876200 -0500
++++ src/claws-mail-3.9.2/src/plugins/pgpmime/Makefile.am	2013-10-03 15:25:44.000000000 -0500
+@@ -39,7 +39,7 @@ no_undefined =
+ endif
+ 
+ if CYGWIN
+-cygwin_export_lib = -L$(top_builddir)/src -lclaws-mail
++cygwin_export_lib = -Wl,$(top_builddir)/src/libclaws-mail.dll.a
+ pgpcore_lib = ../pgpcore/pgpcore.la
+ else
+ pgpcore_lib = 
+@@ -62,9 +62,9 @@ plugininclude_HEADERS = \
+ 
+ pgpmime_la_LDFLAGS = \
+ 	$(plugin_res_ldflag) $(no_undefined) $(export_symbols) \
+-	-avoid-version -module 
++	-avoid-version -module $(cygwin_export_lib)
+ pgpmime_la_DEPENDENCIES = $(plugin_deps)
+-pgpmime_la_LIBADD = $(plugin_ldadd) $(pgpcore_lib) $(cygwin_export_lib) \
++pgpmime_la_LIBADD = $(plugin_ldadd) $(pgpcore_lib) \
+         $(GTK_LIBS) \
+ 	$(GPGME_LIBS) \
+ 	$(MAEMO_LIBS) \
+--- origsrc/claws-mail-3.9.2/src/plugins/python/Makefile.am	2013-10-03 17:56:24.677876400 -0500
++++ src/claws-mail-3.9.2/src/plugins/python/Makefile.am	2013-10-03 15:38:41.908273000 -0500
+@@ -1,3 +1,15 @@
++if PLATFORM_WIN32
++no_undefined = -no-undefined
++else
++no_undefined =
++endif
++
++if CYGWIN
++cygwin_export_lib = -Wl,$(top_builddir)/src/libclaws-mail.dll.a
++else
++cygwin_export_lib =
++endif
++
+ SUBDIRS = examples
+ 
+ plugindir = $(pkglibdir)/plugins
+@@ -24,6 +36,7 @@ python_la_SOURCES = \
+ 	python-shell.h
+ 
+ python_la_LDFLAGS = \
++	$(no_undefined) $(cygwin_export_lib) \
+ 	-avoid-version -module \
+ 	$(GLIB_LIBS) \
+ 	$(GTK_LIBS) \
+--- origsrc/claws-mail-3.9.2/src/plugins/rssyl/Makefile.am	2013-10-03 17:56:24.681876600 -0500
++++ src/claws-mail-3.9.2/src/plugins/rssyl/Makefile.am	2013-10-03 15:38:54.364985500 -0500
+@@ -36,7 +36,7 @@ no_undefined =
+ endif
+ 
+ if CYGWIN
+-cygwin_export_lib = -L$(top_builddir)/src -lclaws-mail
++cygwin_export_lib = -Wl,$(top_builddir)/src/libclaws-mail.dll.a
+ else
+ cygwin_export_lib = 
+ endif
+@@ -55,12 +55,13 @@ INCLUDES= \
+ 
+ rssyl_la_LDFLAGS = \
+ 	$(plugin_res_ldflag) $(no_undefined) $(export_symbols) \
++	$(cygwin_export_lib) \
+ 	-avoid-version -module \
+ 	$(GTK_LIBS)
+ 
+ rssyl_la_DEPENDENCIES = $(plugin_deps)
+ 
+-rssyl_la_LIBADD = $(plugin_ldadd) $(cygwin_export_lib) \
++rssyl_la_LIBADD = $(plugin_ldadd) \
+ 	$(GTK_LIBS) $(LIBXML_LIBS) $(CURL_LIBS)
+ 
+ AM_CPPFLAGS = \
+--- origsrc/claws-mail-3.9.2/src/plugins/smime/Makefile.am	2013-10-03 17:56:24.691877200 -0500
++++ src/claws-mail-3.9.2/src/plugins/smime/Makefile.am	2013-10-03 15:25:44.000000000 -0500
+@@ -40,7 +40,7 @@ no_undefined =
+ endif
+ 
+ if CYGWIN
+-cygwin_export_lib = -L$(top_builddir)/src -lclaws-mail
++cygwin_export_lib = -Wl,$(top_builddir)/src/libclaws-mail.dll.a
+ pgpcore_lib = ../pgpcore/pgpcore.la
+ else
+ cygwin_export_lib = 
+@@ -64,9 +64,9 @@ plugininclude_HEADERS = \
+ 
+ smime_la_LDFLAGS = \
+ 	$(plugin_res_ldflag) $(no_undefined) $(export_symbols) \
+-	-avoid-version -module 
++	-avoid-version -module $(cygwin_export_lib)
+ smime_la_DEPENDENCIES = $(plugin_deps)
+-smime_la_LIBADD = $(plugin_ldadd) $(pgpcore_lib) $(cygwin_export_lib) \
++smime_la_LIBADD = $(plugin_ldadd) $(pgpcore_lib) \
+         $(GTK_LIBS)  \
+ 	$(GPGME_LIBS) \
+ 	$(CONIC_LIBS) \
+--- origsrc/claws-mail-3.9.2/src/plugins/spam_report/Makefile.am	2013-10-03 17:56:24.702877800 -0500
++++ src/claws-mail-3.9.2/src/plugins/spam_report/Makefile.am	2013-10-03 15:39:18.952391800 -0500
+@@ -36,7 +36,7 @@ no_undefined =
+ endif
+ 
+ if CYGWIN
+-cygwin_export_lib = -L$(top_builddir)/src -lclaws-mail
++cygwin_export_lib = -Wl,$(top_builddir)/src/libclaws-mail.dll.a
+ else
+ cygwin_export_lib = 
+ endif
+@@ -54,10 +54,11 @@ spamreport_la_SOURCES = \
+ 
+ spamreport_la_LDFLAGS = \
+ 	$(plugin_res_ldflag) $(no_undefined) $(export_symbols) \
++	$(cygwin_export_lib) \
+ 	-avoid-version -module \
+ 	$(GTK_LIBS)
+ 
+-spamreport_la_LIBADD = $(plugin_ldadd) $(cygwin_export_lib) \
++spamreport_la_LIBADD = $(plugin_ldadd) \
+ 	$(CURL_LIBS) \
+ 	$(GTK_LIBS)
+ 
+--- origsrc/claws-mail-3.9.2/src/plugins/spamassassin/Makefile.am	2013-10-03 17:56:24.713878400 -0500
++++ src/claws-mail-3.9.2/src/plugins/spamassassin/Makefile.am	2013-10-03 15:39:48.313071100 -0500
+@@ -10,15 +10,23 @@ spamassassin_la_SOURCES = \
+ 	libspamc.c libspamc.h \
+ 	utils.c utils.h
+ 
+-spamassassin_la_LDFLAGS = \
+-	-avoid-version -module
++if PLATFORM_WIN32
++no_undefined = -no-undefined
++else
++no_undefined =
++endif
+ 
+ if CYGWIN
+-cygwin_export_lib = -L$(top_builddir)/src -lclaws-mail
++cygwin_export_lib = -Wl,$(top_builddir)/src/libclaws-mail.dll.a
+ else
+ cygwin_export_lib =
+ endif
+-spamassassin_la_LIBADD = $(cygwin_export_lib) \
++
++spamassassin_la_LDFLAGS = \
++	$(no_undefined) $(cygwin_export_lib) \
++	-avoid-version -module 
++
++spamassassin_la_LIBADD = \
+ 	$(GTK_LIBS)	\
+ 	$(MAEMO_LIBS)
+ 
+--- origsrc/claws-mail-3.9.2/src/plugins/tnef_parse/Makefile.am	2013-10-03 17:56:24.724879100 -0500
++++ src/claws-mail-3.9.2/src/plugins/tnef_parse/Makefile.am	2013-10-03 15:40:00.920792200 -0500
+@@ -36,7 +36,7 @@ no_undefined =
+ endif
+ 
+ if CYGWIN
+-cygwin_export_lib = -L$(top_builddir)/src -lclaws-mail
++cygwin_export_lib = -Wl,$(top_builddir)/src/libclaws-mail.dll.a
+ else
+ cygwin_export_lib = 
+ endif
+@@ -55,12 +55,13 @@ tnef_parse_la_SOURCES = \
+ 
+ tnef_parse_la_LDFLAGS = \
+ 	$(plugin_res_ldflag) $(no_undefined) $(export_symbols) \
++	$(cygwin_export_lib) \
+ 	-avoid-version -module \
+ 	$(GTK_LIBS)
+ 
+ tnef_parse_la_DEPENDENCIES = $(plugin_deps)
+ 
+-tnef_parse_la_LIBADD = $(plugin_ldadd) $(cygwin_export_lib) \
++tnef_parse_la_LIBADD = $(plugin_ldadd) \
+ 	$(GTK_LIBS)
+ 
+ noinst_HEADERS = \
+--- origsrc/claws-mail-3.9.2/src/plugins/vcalendar/Makefile.am	2013-10-03 17:56:24.735879700 -0500
++++ src/claws-mail-3.9.2/src/plugins/vcalendar/Makefile.am	2013-10-03 15:40:15.363618300 -0500
+@@ -37,7 +37,7 @@ no_undefined =
+ endif
+ 
+ if CYGWIN
+-cygwin_export_lib = -L$(top_builddir)/src -lclaws-mail
++cygwin_export_lib = -Wl,$(top_builddir)/src/libclaws-mail.dll.a
+ else
+ cygwin_export_lib = 
+ endif
+@@ -73,12 +73,13 @@ vcalendarinclude_HEADERS = \
+  
+ vcalendar_la_LDFLAGS = \
+ 	$(plugin_res_ldflag) $(no_undefined) $(export_symbols) \
++	$(cygwin_export_lib) \
+ 	-avoid-version -module \
+ 	$(GTK_LIBS)
+ 
+ vcalendar_la_DEPENDENCIES = $(plugin_deps)
+ 
+-vcalendar_la_LIBADD = $(plugin_ldadd) $(cygwin_export_lib) \
++vcalendar_la_LIBADD = $(plugin_ldadd) \
+ 	$(GTK_LIBS) \
+ 	$(CURL_LIBS) \
+         $(top_builddir)/src/plugins/vcalendar/libical/libical/libical.la

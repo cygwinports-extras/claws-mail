@@ -1,8 +1,8 @@
 inherit gnome2
 
 NAME="claws-mail"
-VERSION=3.9.0
-RELEASE=2
+VERSION=3.9.2
+RELEASE=1
 CATEGORY="Mail"
 SUMMARY="GTK+ mail client with plugin extensibility"
 DESCRIPTION="Claws Mail is an email client (and news reader), based on GTK+,
@@ -11,39 +11,38 @@ configuration, intuitive operation, abundant features, extensibility,
 robustness and stability.  Lots of extra functionality, like an RSS aggregator,
 calendar, or laptop LED handling, are provided by extra plugins."
 HOMEPAGE="http://www.claws-mail.org/"
-SRC_URI="mirror://sourceforge/sylpheed-claws/${P}.tar.bz2"
+SRC_URI="mirror://sourceforge/sylpheed-claws/${NAME}-${VERSION}.tar.bz2"
 
 PATCH_URI="
 	http://pkgs.fedoraproject.org/cgit/claws-mail.git/plain/claws-mail-3.9.0cvs5.patch
-	mirror://portage/mail-client/claws-mail/files/claws-3.9.0_fix-search-field_part1.patch
-	mirror://portage/mail-client/claws-mail/files/claws-3.9.0_fix-search-field_part2.patch
-	3.7.8-implib.patch
-	3.8.0-cygwin-ldap.patch
+	3.9.2-cygwin-implib.patch
+	3.9.2-cygwin-ldap.patch
 	3.9.0-ca-certs.patch
+	3.9.2-vpath.patch
 "
 
-PKG_NAMES="${PN} ${PN}-devel"
-claws_mail_REQUIRES="ca-certificates"
-claws_mail_CONTENTS="etc/ usr/bin/ usr/share/"
+PKG_NAMES="${NAME} ${NAME}-devel"
+claws_mail_REQUIRES="bogofilter ca-certificates clamav"
+claws_mail_CONTENTS="etc/ usr/bin/ usr/lib/${NAME}/ usr/share/"
 claws_mail_devel_SUMMARY="Claws Mail plugin development"
 claws_mail_devel_REQUIRES="libenchant-devel libetpan-devel libglib2.0-devel gnutls-devel libgpgme-devel libgtk2.0-devel openldap-devel"
-claws_mail_devel_CONTENTS="usr/include/ usr/lib/lib${PN}.dll.a usr/lib/pkgconfig/"
+claws_mail_devel_CONTENTS="usr/include/ usr/lib/*.dll.a usr/lib/pkgconfig/"
 
-for plugin in bogofilter pgpcore pgpinline pgpmime smime spamassassin trayicon
+for plugin in bogofilter pgpcore pgpinline pgpmime smime spamassassin trayicon \
+              address_keeper archive att_remover attachwarner clamd fancy \
+              fetchinfo-plugin gdata_plugin mailmbox newmail notification_plugin \
+              pdf_viewer perl_plugin python_plugin rssyl spam_report tnef_parse \
+              vcalendar
 do
-	PKG_NAMES+=" ${PN}-${plugin}"
-	declare claws_mail_${plugin}_SUMMARY="Claws Mail ${plugin} plugin"
-	declare claws_mail_${plugin}_CONTENTS="usr/lib/${PN}/plugins/${plugin}.*"
+	claws_mail_OBSOLETES+=" claws-mail-${plugin}"
 done
-claws_mail_bogofilter_REQUIRES="bogofilter"
-claws_mail_spamassassin_REQUIRES="spamassassin"
 
-DEPS_PATH="/usr/lib/${PN}/plugins"
+DEPS_PATH="/usr/lib/${NAME}/plugins"
 DIFF_EXCLUDES="claws-features.h"
 
 ACLOCAL_FLAGS="-I m4"
 CYGCONF_ARGS="
-	--disable-dillo-viewer-plugin
+	--disable-acpi_notifier-plugin
 	--disable-jpilot
 	--disable-networkmanager-support
 "
