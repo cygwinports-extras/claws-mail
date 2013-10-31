@@ -19,6 +19,7 @@ PATCH_URI="
 	3.9.2-cygwin-ldap.patch
 	3.9.0-ca-certs.patch
 	3.9.2-vpath.patch
+	3.9.2-Wimplicit-decls.patch
 "
 
 PKG_NAMES="${NAME} ${NAME}-devel"
