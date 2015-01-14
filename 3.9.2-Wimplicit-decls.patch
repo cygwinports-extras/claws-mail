@@ -1,13 +1,14 @@
 --- origsrc/claws-mail-3.9.2/src/common/passcrypt.c	2013-03-19 01:31:04.000000000 -0500
 +++ src/claws-mail-3.9.2/src/common/passcrypt.c	2013-10-30 17:44:30.753874600 -0500
-@@ -29,6 +29,7 @@
- #include <ctype.h>
- #include <stdlib.h>
- #include <unistd.h>
-+#include <crypt.h>
+@@ -32,6 +32,8 @@
  
  #if defined (__FreeBSD__)
  #include <rpc/des_crypt.h>
++#else
++#include <crypt.h>
+ #endif
+
+ #include <glib.h>
 --- origsrc/claws-mail-3.9.2/src/plugins/vcalendar/libical/libical/icalderivedproperty.c.in	2013-03-19 01:31:04.000000000 -0500
 +++ src/claws-mail-3.9.2/src/plugins/vcalendar/libical/libical/icalderivedproperty.c.in	2013-10-30 18:58:33.353976800 -0500
 @@ -47,6 +47,8 @@
@@ -19,23 +20,4 @@
  
  /* This map associates the property kinds with the string
     representation of the property name and the kind of VALUE that the
---- origsrc/claws-mail-3.9.2/src/plugins/vcalendar/vcal_folder.c	2013-03-19 01:31:04.000000000 -0500
-+++ src/claws-mail-3.9.2/src/plugins/vcalendar/vcal_folder.c	2013-10-30 19:00:05.703258800 -0500
-@@ -62,6 +62,7 @@
- #include "msgcache.h"
- #include "timing.h"
- #include "messageview.h"
-+#include "folder_item_prefs.h"
- 
- #include <gtk/gtk.h>
- #include <dirent.h>
---- origsrc/claws-mail-3.9.2/src/toolbar.c	2013-03-19 01:31:04.000000000 -0500
-+++ src/claws-mail-3.9.2/src/toolbar.c	2013-10-30 17:47:44.728969300 -0500
-@@ -59,6 +59,7 @@
- #include "alertpanel.h"
- #include "imap.h"
- #include "account.h"
-+#include "send_message.h"
- #ifndef USE_NEW_ADDRBOOK
- 	#include "addressbook.h"
- #else
+

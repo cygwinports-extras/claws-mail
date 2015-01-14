@@ -1,7 +1,7 @@
 inherit gnome2
 
 NAME="claws-mail"
-VERSION=3.9.2
+VERSION=3.11.1
 RELEASE=1
 CATEGORY="Mail"
 SUMMARY="GTK+ mail client with plugin extensibility"
@@ -11,13 +11,10 @@ configuration, intuitive operation, abundant features, extensibility,
 robustness and stability.  Lots of extra functionality, like an RSS aggregator,
 calendar, or laptop LED handling, are provided by extra plugins."
 HOMEPAGE="http://www.claws-mail.org/"
-SRC_URI="mirror://sourceforge/sylpheed-claws/${NAME}-${VERSION}.tar.bz2"
-
+SRC_URI="mirror://sourceforge/claws-mail/claws-mail-${VERSION}.tar.bz2"
 PATCH_URI="
-	http://pkgs.fedoraproject.org/cgit/claws-mail.git/plain/claws-mail-3.9.0cvs5.patch
-	3.9.2-cygwin-implib.patch
+	3.11.1-cygwin-plugins.patch
 	3.9.2-cygwin-ldap.patch
-	3.9.0-ca-certs.patch
 	3.9.2-vpath.patch
 	3.9.2-Wimplicit-decls.patch
 "
@@ -46,4 +43,15 @@ CYGCONF_ARGS="
 	--disable-acpi_notifier-plugin
 	--disable-jpilot
 	--disable-networkmanager-support
+	--disable-spamassassin-plugin
 "
+MAKEOPTS+=" arch_ldflags=-Wl,--export-all-symbols,--out-implib,libclaws-mail.dll.a cygwin_export_lib=-Wl,\$(top_builddir)/src/libclaws-mail.dll.a no_undefined=-no-undefined"
+
+src_install() {
+	cd ${B}
+	cyginstall
+
+	dolib src/libclaws-mail.dll.a
+
+	echo "Libs: -L\${libdir} -lclaws-mail" >> ${D}/usr/lib/pkgconfig/claws-mail.pc
+}
