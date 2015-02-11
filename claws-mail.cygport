@@ -2,7 +2,7 @@ inherit gnome2
 
 NAME="claws-mail"
 VERSION=3.11.1
-RELEASE=1
+RELEASE=2
 CATEGORY="Mail"
 SUMMARY="GTK+ mail client with plugin extensibility"
 DESCRIPTION="Claws Mail is an email client (and news reader), based on GTK+,
