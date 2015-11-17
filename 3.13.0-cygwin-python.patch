@@ -1,0 +1,29 @@
+--- origsrc/claws-mail-3.13.0/configure.ac	2015-11-16 22:08:53.732031900 -0600
++++ src/claws-mail-3.13.0/configure.ac	2015-11-16 23:12:29.241540100 -0600
+@@ -1174,10 +1174,13 @@ if test x"$HAVE_PERL" = xyes; then
+ 	if test x"$HAVE_LIBPERL" = xno; then
+ 		LIBPERL_PREFIX=`perl -MExtUtils::Embed -e perl_inc`
+ 		LIBPERL_PREFIX=`echo $LIBPERL_PREFIX |sed 's/-I//'`
+-		AC_MSG_CHECKING([for libperl.so])
++		AC_MSG_CHECKING([for libperl])
+ 		if test -f "$LIBPERL_PREFIX/libperl.so"; then
+ 			AC_MSG_RESULT(yes)
+ 			HAVE_LIBPERL=yes
++		elif test -f "$LIBPERL_PREFIX/libperl.dll.a"; then
++			AC_MSG_RESULT(yes)
++			HAVE_LIBPERL=yes
+ 		else
+ 			AC_MSG_RESULT(no)
+ 		fi	
+@@ -1213,9 +1216,9 @@ AM_PATH_PYTHON([2.5], [
+ 
+ 	if test x"$HAVE_PYTHON" = xyes; then
+ 		_save_libs="$LIBS"
+-		if test x"$platform_win32" = xno; then
++		if test x"$os_win32" = xno; then
+ 			# libpython.so
+-			PYTHON_SHARED_LIB="libpython${PYTHON_VERSION}.so"
++			PYTHON_SHARED_LIB="libpython${PYTHON_VERSION}$shrext"
+ 			LIBS="-ldl"
+ 			AC_MSG_CHECKING([whether to dlopen $PYTHON_SHARED_LIB works])
+ 			AC_RUN_IFELSE(

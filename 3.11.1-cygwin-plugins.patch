@@ -99,16 +99,6 @@
  	-avoid-version -module \
  	$(GTK_LIBS) \
  	$(GDATA_LIBS)
---- origsrc/claws-mail-3.11.1/src/plugins/geolocation/Makefile.am	2014-10-27 13:58:15.000000000 -0500
-+++ src/claws-mail-3.11.1/src/plugins/geolocation/Makefile.am	2015-01-14 11:52:08.013134600 -0600
-@@ -14,6 +26,7 @@ geolocation_la_SOURCES = \
- 	pixmap_earth.h
- 
- geolocation_la_LDFLAGS = \
-+	$(no_undefined) $(cygwin_export_lib) \
- 	-avoid-version -module \
- 	$(GTK_LIBS) \
- 	$(LIBSOUP_LIBS) \
 --- origsrc/claws-mail-3.11.1/src/plugins/mailmbox/Makefile.am	2014-10-27 13:58:15.000000000 -0500
 +++ src/claws-mail-3.11.1/src/plugins/mailmbox/Makefile.am	2015-01-14 13:08:16.873306200 -0600
 @@ -78,6 +78,7 @@ mailmbox_la_SOURCES = \
@@ -175,3 +165,14 @@
  
  if CYGWIN
  cygwin_export_lib = -L$(top_builddir)/src -lclaws-mail
+--- origsrc/claws-mail-3.13.0/tools/Makefile.am	2015-10-11 03:19:21.000000000 -0500
++++ src/claws-mail-3.13.0/tools/Makefile.am	2015-11-16 22:54:55.786268300 -0600
+@@ -76,7 +76,7 @@ distclean-local:
+ 	fi; \
+ 	fi
+ 
+-if PLATFORM_WIN32
++if OS_WIN32
+ install-data-local:
+ 	mkdir -p ${pkgdatadir}
+ 	cp ${top_srcdir}/tools/ca-certificates.crt ${pkgdatadir}/

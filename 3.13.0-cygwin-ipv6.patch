@@ -1,0 +1,11 @@
+--- origsrc/claws-mail-3.13.0/configure.ac	2015-11-16 22:08:53.732031900 -0600
++++ src/claws-mail-3.13.0/configure.ac	2015-11-16 23:36:14.602538000 -0600
+@@ -451,7 +451,7 @@ AC_MSG_CHECKING([whether to use IPv6])
+ if test x"$enable_ipv6" = xyes; then
+ 	AC_MSG_RESULT(yes)
+ 	AC_MSG_CHECKING([for IPv6 support])
+-	if test x"$platform_win32" = xyes; then
++	if test x"$os_win32" = xyes; then
+ 		AC_CACHE_VAL(ac_cv_ipv6,[
+ 			AC_TRY_COMPILE([
+ 					#include <ws2tcpip.h>
