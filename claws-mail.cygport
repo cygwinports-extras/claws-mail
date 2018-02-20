@@ -1,7 +1,7 @@
 inherit gnome2
 
 NAME="claws-mail"
-VERSION=3.13.0
+VERSION=3.16.0
 RELEASE=1
 CATEGORY="Mail"
 SUMMARY="GTK+ mail client with plugin extensibility"
@@ -29,15 +29,6 @@ claws_mail_devel_SUMMARY="Claws Mail plugin development"
 claws_mail_devel_REQUIRES="libenchant-devel libetpan-devel libglib2.0-devel gnutls-devel libgpgme-devel libgtk2.0-devel openldap-devel"
 claws_mail_devel_CONTENTS="usr/include/ usr/lib/*.dll.a usr/lib/pkgconfig/"
 
-for plugin in bogofilter pgpcore pgpinline pgpmime smime spamassassin trayicon \
-              address_keeper archive att_remover attachwarner clamd fancy \
-              fetchinfo-plugin gdata_plugin mailmbox newmail notification_plugin \
-              pdf_viewer perl_plugin python_plugin rssyl spam_report tnef_parse \
-              vcalendar
-do
-	claws_mail_OBSOLETES+=" claws-mail-${plugin}"
-done
-
 DEPS_PATH="/usr/lib/${NAME}/plugins"
 DIFF_EXCLUDES="claws-features.h"
 
@@ -48,7 +39,7 @@ CYGCONF_ARGS="
 	--disable-networkmanager-support
 	--disable-spamassassin-plugin
 "
-MAKEOPTS+=" arch_ldflags=-Wl,--export-all-symbols,--out-implib,libclaws-mail.dll.a cygwin_export_lib=-Wl,\$(top_builddir)/src/libclaws-mail.dll.a no_undefined=-no-undefined"
+MAKEOPTS+=" claws_mail_res_ldflag=-Wl,--export-all-symbols,--out-implib,libclaws-mail.dll.a cygwin_export_lib=-Wl,\$(top_builddir)/src/libclaws-mail.dll.a no_undefined=-no-undefined"
 
 src_install() {
 	cd ${B}

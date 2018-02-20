@@ -1,14 +1,3 @@
---- origsrc/claws-mail-3.13.0/configure.ac	2015-11-16 22:08:53.732031900 -0600
-+++ src/claws-mail-3.13.0/configure.ac	2015-11-16 23:12:29.241540100 -0600
-@@ -1163,7 +1163,7 @@ if test x"$HAVE_PERL" = xyes; then
- 	PERL_LDFLAGS=`perl -MExtUtils::Embed -e ldopts |sed 's/-lgdbm//'`
- 	PERL_LDFLAGS=`echo $PERL_LDFLAGS |sed 's/-ldb//'`
- 	PERL_LDFLAGS=`echo $PERL_LDFLAGS |sed 's/-lndbm//'`
--	PERL_LDFLAGS=`echo $PERL_LDFLAGS |sed 's/-lc//'`
-+	PERL_LDFLAGS=`echo $PERL_LDFLAGS |sed 's/-fstack-protector[^ ]*/-lssp/'`
- 	AC_MSG_RESULT(ok)
- 	AC_MSG_NOTICE([Adding perl LIBS ${PERL_CFLAGS}])
- 	
 --- origsrc/claws-mail-3.13.0/src/plugins/perl/perl_plugin.c	2015-10-11 03:19:33.000000000 -0500
 +++ src/claws-mail-3.13.0/src/plugins/perl/perl_plugin.c	2015-11-16 22:57:53.785371300 -0600
 @@ -520,7 +520,7 @@ static void free_all_lists(void)

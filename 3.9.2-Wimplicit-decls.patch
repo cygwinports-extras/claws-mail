@@ -9,15 +9,3 @@
  #endif
 
  #include <glib.h>
---- origsrc/claws-mail-3.9.2/src/plugins/vcalendar/libical/libical/icalderivedproperty.c.in	2013-03-19 01:31:04.000000000 -0500
-+++ src/claws-mail-3.9.2/src/plugins/vcalendar/libical/libical/icalderivedproperty.c.in	2013-10-30 18:58:33.353976800 -0500
-@@ -47,6 +47,8 @@
- 
- struct icalproperty_impl*
- icalproperty_new_impl (icalproperty_kind kind);
-+extern void
-+icalproperty_add_parameters (struct icalproperty_impl *, va_list);
- 
- /* This map associates the property kinds with the string
-    representation of the property name and the kind of VALUE that the
-
